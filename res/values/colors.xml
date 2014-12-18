@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+    <color name="transparent">#00000000</color>
+    <color name="black">#ff000000</color>
+    <color name="white">#ffffffff</color>
+    <color name="orange">#FFFF5000</color>
+    <color name="blue">#FF1262C9</color>
+    <color name="gray">#ffefeff4</color>
+    <color name="green">#FF1DD621</color>
+    <color name="light_gray">#ffE0E0E0</color>
+    <color name="china_white">#F7F7F7</color>
+    <color name="red">#FFFF0015</color>
+    <color name="yellow">#FFF4AF2A</color>
+    <color name="yellow_two">#ff6000</color>
+    <color name="page_bg">#FFF0EFF5</color>
+    <color name="warm_tip">#FFA5A5A5</color>
+    <color name="common_black">#FF353537</color><!-- 用于页面最常见的黑色字体 -->
+    <color name="common_gray">#FF898989</color><!-- 用于页面最常见的灰色字体 -->
+    <color name="list_bg_on">#FFD9D9D9</color>
+    <color name="title_color">#333333</color>
+    <color name="hint_color">#cccccc</color>
+    <color name="introduce_color">#898989</color>
+    <color name="city_list_node">#ffD8D8D8</color>
+    <color name="list_divider_color">#FFD8D8D8</color>
+    <color name="btn_disable_color">#FF888888</color>
+    <color name="light_yellow">#FF6633</color>
+    <color name="viewfinder_laser">#ffff0000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+    <color name="red_ball_text">#D81313</color>
+    <color name="blue_ball_text">#154FC6</color>
+    <color name="warm_tips_line">#c3c3c3</color>
+    <color name="text_disabled">#A0A0A0</color>
+    <color name="text_common_black">#333333</color>
+
+    <!-- 门店 -->
+    <color name="store_filter_bg">#FFEAEAEA</color>
+
+    <!-- 支付宝支付 -->
+    <color name="TextColorWhite">#FFFFFFFF</color>
+    <color name="dialog_tiltle_blue">#2277BB</color>
+    
+    <color name="grid_border">#FFFFFFFF</color>
+
+</resources>

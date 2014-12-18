@@ -1,0 +1,162 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="NoTitleBarTheme" parent="android:Theme.Light.NoTitleBar"></style>
+
+    <style name="solar_dialog" parent="android:Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="solar_dialog_no_dim" parent="@style/solar_dialog">
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="s_edit_text">
+        <item name="android:background">@null</item>
+        <item name="android:textColorHint">@color/hint_color</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:maxLength">20</item>
+    </style>
+
+    <style name="s_edit_text_fragment" parent="@style/s_edit_text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:inputType">none</item>
+        <item name="android:editable">false</item>
+        <item name="android:ellipsize">none</item>
+        <item name="android:textColor">@color/common_black</item>
+    </style>
+
+    <style name="s_edit_text_wrap_match" parent="@style/s_edit_text">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="s_edit_text_match_wrap" parent="@style/s_edit_text">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="s_edit_text_wrap_wrap" parent="@style/s_edit_text">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="s_edit_text_match_match" parent="@style/s_edit_text">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="s_button">
+        <item name="android:textColorHint">@color/hint_color</item>
+    </style>
+
+    <style name="s_button_match" parent="@style/s_button">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColor">@color/common_black</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="s_image">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="s_image_relative" parent="@style/s_image">
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="s_image_linear" parent="@style/s_image">
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="s_text"></style>
+
+    <style name="s_text_wrap" parent="@style/s_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="s_text_match" parent="@style/s_text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/common_black</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="s_text_no_data" parent="@style/s_text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/common_black</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingTop">30dp</item>
+    </style>
+
+    <style name="s_text_common" parent="@style/s_text_wrap">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/common_black</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="s_text_gray" parent="@style/s_text_wrap">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/common_gray</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="s_text_multi" parent="@style/s_text_wrap">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/common_black</item>
+    </style>
+
+    <style name="s_text_small" parent="@style/s_text_wrap">
+        <item name="android:textSize">16sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="s_text_minimum" parent="@style/s_text_wrap">
+        <item name="android:textSize">12sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="s_text_relative" parent="@style/s_text_common">
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="s_image_leftparent" parent="@style/s_text_common">
+        <item name="android:layout_alignParentLeft">true</item>
+    </style>
+
+    <style name="s_text_content_light" parent="@style/s_text_relative">
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginRight">35dp</item>
+        <item name="android:textColor">@color/common_black</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+</resources>

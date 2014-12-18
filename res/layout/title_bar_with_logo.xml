@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@drawable/bg_title_bar" >
+
+    <ImageButton
+        android:id="@+id/b_back"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:background="@null"
+        android:paddingLeft="12dp"
+        android:paddingRight="20dp"
+        android:src="@drawable/drw_back"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/b_func"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dip"
+        android:background="@drawable/drw_back"
+        android:minWidth="56dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="@string/app_name"
+        android:textColor="#FF000000" />
+
+    <ImageButton
+        android:id="@+id/b_func2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dip"
+        android:background="@null"
+        android:padding="5dp"
+        android:src="@drawable/drw_back"
+        android:visibility="gone" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/drw_back" />
+
+</RelativeLayout>
