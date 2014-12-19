@@ -1,6 +1,9 @@
 package com.solaredge.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.json.JSONException;
 
@@ -11,13 +14,13 @@ import android.os.Message;
 
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.solaredge.config.AppConfig;
 import com.solaredge.entity.HttpRequestParam;
 import com.solaredge.entity.JsonResponse;
-import com.solaredge.fusion.SvcNames;
 import com.solaredge.server.AsyncResultCode;
 import com.solaredge.server.ListenerTransport;
 import com.solaredge.server.SolarCommonResponse;
@@ -29,7 +32,7 @@ public class SolarHttpUtil {
 	private static SolarHttpUtil sInstance;
 	private ArrayList<ListenerTransport> mListenerTransports = new ArrayList<ListenerTransport>();
 
-	private static final String TAG = "Tissot-HttpClient";
+	private static final String TAG = "Solar-HttpClient";
 
 	/**
 	 * Get the singleton point exchange manager instance.<br>
@@ -78,12 +81,43 @@ public class SolarHttpUtil {
 			}
 		};
 
-		int action = extraInfo.getInt("action");
-		String requestUrl = AppConfig.getServerUrl(mContext)
-				+ SvcNames.getServiceHandler(action);
-		LogX.trace(TAG, "requestUrl: " + requestUrl);
-		mHttpClient.send(HttpMethod.POST, requestUrl, requestParam.getParams(),
-				asyncHandler);
+		requestParam.addParam("req_session", "");
+		requestParam.addParam("req_language", "0");
+		requestParam.addParam("format", "json");
+		requestParam.addParam("partner", "Tspec");
+		requestParam.addParam("v", "1.0");
+		RequestParams params = toRequestParam(requestParam);
+
+		String requestUrl = AppConfig.getServerUrl(mContext);
+		mHttpClient.send(HttpMethod.POST, requestUrl, params, asyncHandler);
+	}
+
+	private RequestParams toRequestParam(HttpRequestParam requestParam) {
+		RequestParams params = new RequestParams();
+		StringBuilder builder = new StringBuilder();
+		List<String> nameList = Arrays.asList(requestParam.paramNameArray());
+		Collections.sort(nameList);
+		for (String name : nameList) {
+			String value = requestParam.getParam(name);
+			if (value == null) {
+				value = "";
+			}
+			params.addBodyParameter(name, value);
+			if (builder.length() != 0) {
+				builder.append("&");
+			}
+
+			builder.append(name).append("=").append(value);
+		}
+
+		String signature = EncryptUtil.MD5(builder.toString()
+				+ AppConfig.SECURITY_KEY);
+		params.addBodyParameter("sign", signature);
+
+		LogX.trace(TAG, "http request params: " + builder.toString() + "&sign="
+				+ signature);
+
+		return params;
 	}
 
 	public synchronized void sendHttpRequest(HttpRequestParam requestParam,
@@ -110,12 +144,9 @@ public class SolarHttpUtil {
 				handler.sendMessage(handler.obtainMessage(what, jsonResponse));
 			}
 		};
-
-		int action = requestParam.getAction();
-		String requestUrl = AppConfig.getServerUrl(mContext)
-				+ SvcNames.getServiceHandler(action);
-		mHttpClient.send(HttpMethod.POST, requestUrl, requestParam.getParams(),
-				asyncHandler);
+		RequestParams params = toRequestParam(requestParam);
+		String requestUrl = AppConfig.getServerUrl(mContext);
+		mHttpClient.send(HttpMethod.POST, requestUrl, params, asyncHandler);
 	}
 
 	private void handleHttpResultSuccess(String responseMessage,

@@ -15,5 +15,8 @@
     <string name="app_crash">程序意外终止</string>
     <string name="title_activity_select_language">SelectLanguageActivity</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_inverter_list">InverterListActivity</string>
+    <string name="title_activity_modify_inverter">ModifyInverterActivity</string>
+    <string name="title_activity_inverter_layout">InverterLayoutActivity</string>
 
 </resources>

@@ -2,10 +2,6 @@ package com.solaredge.ui.adapter;
 
 import java.util.List;
 
-import com.solaredge.R;
-import com.solaredge.SelectLanguageActivity;
-import com.solaredge.entity.PowerStation;
-
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -14,6 +10,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.solaredge.R;
+import com.solaredge.entity.PowerStation;
+import com.solaredge.ui.InverterListActivity;
 
 public class PowerStationListAdapter extends BaseAdapter {
 
@@ -72,8 +72,7 @@ public class PowerStationListAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(mContext,
-						SelectLanguageActivity.class);
+				Intent intent = new Intent(mContext, InverterListActivity.class);
 				mContext.startActivity(intent);
 			}
 		});

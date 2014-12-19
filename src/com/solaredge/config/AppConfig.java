@@ -6,6 +6,8 @@ import com.solaredge.fusion.ServerInfo;
 
 public class AppConfig {
 
+	public static final String SECURITY_KEY = "61ABC2720AB049E18D9457C62BFD8732";
+
 	public static String getServerUrl(Context context) {
 		return ServerInfo.WEB_SERVICE_URL;
 	}

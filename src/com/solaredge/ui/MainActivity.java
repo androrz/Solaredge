@@ -7,11 +7,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-import com.solaredge.LoginActivity;
 import com.solaredge.R;
-import com.solaredge.SelectLanguageActivity;
+import com.solaredge.entity.JsonResponse;
 import com.solaredge.entity.PowerStation;
 import com.solaredge.fusion.FusionField;
+import com.solaredge.fusion.SvcNames;
+import com.solaredge.server.response.AlaResponse;
 import com.solaredge.ui.adapter.PowerStationListAdapter;
 
 public class MainActivity extends BaseActivity {
@@ -25,8 +26,16 @@ public class MainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		if (!FusionField.solarUser.isUserLogin()) {
-			jumpToPage(LoginActivity.class, true);
+			// jumpToPage(LoginActivity.class, true);
 		}
+
+		mBaseHandler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				// mSolarManager.getStationList();
+			}
+		}, 200);
 
 		List<PowerStation> list = new ArrayList<PowerStation>();
 		PowerStation station = new PowerStation();
@@ -68,6 +77,30 @@ public class MainActivity extends BaseActivity {
 			break;
 		}
 		super.onClick(v);
+	}
+
+	@Override
+	public void handleEvent(int resultCode, AlaResponse response) {
+		if (!analyzeAsyncResultCode(resultCode, response)) {
+			return;
+		}
+
+		int action = response.getResponseEvent();
+		JsonResponse jr = response.getResponseContent();
+		switch (action) {
+		case SvcNames.WSN_GET_STATION_LIST:
+			handleStationList(jr);
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void handleStationList(JsonResponse jr) {
+		if (jr == null) {
+			return;
+		}
+
 	}
 
 }

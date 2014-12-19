@@ -11,13 +11,14 @@ import android.os.Message;
 import com.lidroid.xutils.DbUtils;
 import com.solaredge.SolarApp;
 import com.solaredge.entity.HttpRequestParam;
+import com.solaredge.fusion.SvcNames;
 import com.solaredge.utils.LogX;
 import com.solaredge.utils.SolarHttpUtil;
 
 public class SolarManager {
 
-	private TissotWorkerHandler mTissotHandler = null;
-	private SolarHttpUtil mTissotHttpUtil = null;
+	private TissotWorkerHandler mSolarHandler = null;
+	private SolarHttpUtil mSolarHttpUtil = null;
 	private DbUtils dbUtils;
 
 	// Map from AlaListeners to their associated ListenerTransport objects
@@ -27,9 +28,7 @@ public class SolarManager {
 
 	private static SolarManager sInstance;
 
-	private final static String TAG = "Tissot-TissotManager";
-
-	public static HashMap<String, String> provinceHash = new HashMap<String, String>();
+	private final static String TAG = "Solar-SolarManager";
 
 	private static final int MSG_SAVE_SHOP_CITY = 0;
 	private static final int MSG_SAVE_FIX_CITY = 1;
@@ -57,8 +56,8 @@ public class SolarManager {
 	}
 
 	private SolarManager() {
-		mTissotHttpUtil = SolarHttpUtil.getInstance(mContext);
-		mTissotHandler = new TissotWorkerHandler(SolarApp
+		mSolarHttpUtil = SolarHttpUtil.getInstance(mContext);
+		mSolarHandler = new TissotWorkerHandler(SolarApp
 				.getSolarHandlerThread().getLooper());
 		dbUtils = DbUtils.create(mContext, "tissot");
 	}
@@ -86,7 +85,7 @@ public class SolarManager {
 		extraInfo.putInt("action", param.getAction());
 		extraInfo.putInt("module", ListenerTransport.TYPE_TISSOT_PUBLIC);
 
-		mTissotHttpUtil.sendHttpRequest(param, extraInfo);
+		mSolarHttpUtil.sendHttpRequest(param, extraInfo);
 	}
 
 	public int registerCallback(SolarListener listener) {
@@ -125,7 +124,7 @@ public class SolarManager {
 			transport = new ListenerTransport(listener, looper);
 		}
 		mListeners.put(listener, transport);
-		mTissotHttpUtil.addListenerTransport(transport);
+		mSolarHttpUtil.addListenerTransport(transport);
 
 		return SyncResultCode.SUCCESS;
 	}
@@ -144,7 +143,21 @@ public class SolarManager {
 			throw new IllegalArgumentException("listener==null");
 		}
 		ListenerTransport transport = mListeners.remove(listener);
-		mTissotHttpUtil.removeListenerTransport(transport);
+		mSolarHttpUtil.removeListenerTransport(transport);
+	}
+
+	public void userLogin(String userName, String userPassword) {
+		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_USER_LOGIN);
+		p.addParam("password", userPassword);
+		p.addParam("mobile", userName);
+
+		sendHttpRequest(p, true, true);
+	}
+
+	public void getStationList() {
+		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_GET_STATION_LIST);
+
+		sendHttpRequest(p, false, true);
 	}
 
 	private class TissotWorkerHandler extends Handler {

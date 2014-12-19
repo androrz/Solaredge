@@ -1,8 +1,88 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
     <include layout="@layout/title_bar_without_logo" />
 
-</RelativeLayout>
+    <TextView
+        style="@style/s_text_common"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:text="选择语言" />
+
+    <RadioGroup
+        android:id="@+id/r_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/s_text_common"
+                android:layout_centerVertical="true"
+                android:text="中文" />
+
+            <RadioButton
+                android:id="@+id/r_chinese"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true" />
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/img_divider" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/s_text_common"
+                android:layout_centerVertical="true"
+                android:text="English" />
+
+            <RadioButton
+                android:id="@+id/r_english"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true" />
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/img_divider" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/s_text_common"
+                android:layout_centerVertical="true"
+                android:text="日本語" />
+
+            <RadioButton
+                android:id="@+id/r_japnese"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true" />
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/img_divider" />
+    </RadioGroup>
+
+</LinearLayout>

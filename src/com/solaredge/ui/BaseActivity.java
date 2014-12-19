@@ -27,10 +27,15 @@ import android.widget.Toast;
 
 import com.lidroid.xutils.ViewUtils;
 import com.solaredge.R;
+import com.solaredge.server.AsyncResultCode;
+import com.solaredge.server.SolarListener;
+import com.solaredge.server.SolarManager;
+import com.solaredge.server.response.AlaResponse;
 import com.solaredge.utils.LogX;
 import com.solaredge.view.SolarProgressDialog;
 
-public class BaseActivity extends FragmentActivity implements OnClickListener {
+public class BaseActivity extends FragmentActivity implements OnClickListener,
+		SolarListener {
 
 	protected ImageButton mBack;
 	protected Button mXFunc;
@@ -40,6 +45,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener {
 	protected Toast mToast;
 	protected SolarProgressDialog mProgressDialog;
 	protected Intent mIntent = null;
+	protected SolarManager mSolarManager;
 
 	private static final int MSG_DISMISS_PROGRESS_DIALOG = 0;
 	private static final int MSG_SHOW_TOAST = 1;
@@ -69,6 +75,8 @@ public class BaseActivity extends FragmentActivity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		mSolarManager = SolarManager.getInstance(this);
+
 		initCaughtException();
 		ViewUtils.inject(this);
 		initWidgetProperty();
@@ -84,13 +92,57 @@ public class BaseActivity extends FragmentActivity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		LogX.trace(TAG, getClassName() + " - onResume");
+		mSolarManager.registerCallback(this);
 		super.onResume();
 	}
 
 	@Override
+	protected void onPause() {
+		mSolarManager.unregisterCallback(this);
+		dismissProgressBar();
+		mBaseHandler.removeMessages(MSG_SHOW_TOAST);
+		super.onPause();
+
+	}
+
+	@Override
 	protected void onDestroy() {
-		LogX.trace(TAG, getClassName() + " - onDestroy");
 		super.onDestroy();
+	}
+
+	protected boolean analyzeAsyncResultCode(int code, AlaResponse response) {
+		return analyzeAsyncResultCode(code, response, true);
+	}
+
+	protected boolean analyzeAsyncResultCode(int code, AlaResponse response,
+			boolean showDetail) {
+		if (response == null) {
+			dismissProgressBar();
+			return false;
+		}
+		if (response != null
+				&& response.getResponseEvent() == AlaResponse.RESPONSE_EVENT_SHOW_PROGRESS) {
+			showProgressDialog();
+			return false;
+		}
+
+		if (response.getCloseProgress()) {
+			dismissProgressBar();
+		}
+
+		if (code == AsyncResultCode.NETWORK_ERROR) {
+			showToast("网路错误！");
+			return false;
+		}
+
+		if (code != AsyncResultCode.SUCCESS) {
+			String responseMessage = response.getResponseMessage();
+			if (responseMessage != null && responseMessage != "" && showDetail) {
+				showToast(responseMessage);
+			}
+		}
+
+		return true;
 	}
 
 	private void initCaughtException() {
@@ -277,8 +329,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener {
 				break;
 			case MSG_SHOW_PROGRESS_DIALOG:
 				if (mProgressDialog == null) {
-					mProgressDialog = new SolarProgressDialog(
-							BaseActivity.this);
+					mProgressDialog = new SolarProgressDialog(BaseActivity.this);
 				}
 
 				String content = null;
@@ -305,6 +356,11 @@ public class BaseActivity extends FragmentActivity implements OnClickListener {
 					.getApplicationWindowToken(),
 					InputMethodManager.HIDE_NOT_ALWAYS);
 		}
+	}
+
+	@Override
+	public void handleEvent(int resultCode, AlaResponse response) {
+
 	}
 
 }

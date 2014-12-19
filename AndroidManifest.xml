@@ -41,12 +41,13 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
+        android:name=".SolarApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.solaredge.ui.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoTitleBarTheme" >
             <intent-filter>
@@ -56,12 +57,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SelectLanguageActivity"
+            android:name="com.solaredge.ui.SelectLanguageActivity"
             android:parentActivityName=".ui.BaseActivity"
             android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="com.solaredge.ui.LoginActivity"
+            android:theme="@style/NoTitleBarTheme" >
+        </activity>
+        <activity
+            android:name="com.solaredge.ui.InverterListActivity"
+            android:theme="@style/NoTitleBarTheme" >
+        </activity>
+        <activity
+            android:name="com.solaredge.ui.ModifyInverterActivity"
+            android:theme="@style/NoTitleBarTheme" >
+        </activity>
+        <activity
+            android:name="com.solaredge.ui.InverterLayoutActivity"
             android:theme="@style/NoTitleBarTheme" >
         </activity>
     </application>
