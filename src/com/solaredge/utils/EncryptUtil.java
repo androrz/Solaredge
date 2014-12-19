@@ -130,11 +130,52 @@ public class EncryptUtil {
 			cipher.init(Cipher.ENCRYPT_MODE, securekey, random);
 			// 现在，获取数据并加密,正式执行加密操作
 			b = cipher.doFinal(src.getBytes("UTF-8"));
-			
+
 			return new String(b);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+
+	public static String encrypt(byte[] data, byte[] key) {
+		try {
+			int paddinglen = 0;
+			if (data.length % 8 != 0) {
+				paddinglen = 8 - data.length % 8;
+			}
+			int len = data.length + paddinglen;
+			byte[] b = new byte[len];
+			for (int i = 0; i < len; i++) {
+				if (i < data.length)
+					b[i] = data[i];
+				else
+					b[i] = 0;
+			}
+
+			SecureRandom sr = new SecureRandom();
+			DESKeySpec dks = new DESKeySpec(key);
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+			SecretKey secretKey = keyFactory.generateSecret(dks);
+
+			Cipher cipher = Cipher.getInstance("DES/ECB/NoPadding");
+			cipher.init(Cipher.ENCRYPT_MODE, secretKey, sr);
+			byte encryptedData[] = cipher.doFinal(b);
+			String encryptedHexStr = "";
+
+			for (int i = 0; i < encryptedData.length; i++) {
+				String hex = Integer.toHexString(encryptedData[i] & 0xFF);
+				if (hex.length() == 1) {
+					hex = '0' + hex;
+				}
+				encryptedHexStr += hex.toLowerCase();
+			}
+			return encryptedHexStr;
+		} catch (Exception e) {
+			System.err.println("DES算法，加密数据出错!");
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }
