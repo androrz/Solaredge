@@ -17,7 +17,7 @@ public class AppConfig {
 
 	public static class PreferenceUser {
 		public static final String USER_ID_KEY = "user_id";
-		public static final String USER_MOBILE_KEY = "user_mobile";
+		public static final String USER_UDID_KEY = "user_udid";
 	}
 
 	public static class PreferenceSolar {

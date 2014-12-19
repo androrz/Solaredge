@@ -6,24 +6,32 @@ import com.solaredge.config.UserPreference;
 import com.solaredge.fusion.FusionCode;
 
 public class SolarUser {
-	private String udid;
+
+	private UserPreference mUserPreference;
+
+	public SolarUser() {
+		mUserPreference = (UserPreference) PreferenceFactory
+				.get(AppConfig.PreferenceModule.SOLAR_PREFERENCE_USER);
+	}
 
 	public String getUdid() {
-		return udid;
+		return mUserPreference.getUserUDID();
 	}
 
 	public void setUdid(String udid) {
-		this.udid = udid;
+		mUserPreference.setUserUDID(udid);
+	}
+
+	public String getMemberID() {
+		return mUserPreference.getMemberID();
+	}
+
+	public void setMemberID(String mMemberID) {
+		mUserPreference.setMemberID(mMemberID);
 	}
 
 	public boolean isUserLogin() {
 		return !getMemberID().equals(FusionCode.ETY_STR);
-	}
-
-	public String getMemberID() {
-		UserPreference preference = (UserPreference) PreferenceFactory
-				.get(AppConfig.PreferenceModule.SOLAR_PREFERENCE_USER);
-		return preference.getMemberID();
 	}
 
 	public void clear() {

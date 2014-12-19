@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
+import com.solaredge.LoginActivity;
 import com.solaredge.R;
 import com.solaredge.SelectLanguageActivity;
 import com.solaredge.entity.PowerStation;
+import com.solaredge.fusion.FusionField;
 import com.solaredge.ui.adapter.PowerStationListAdapter;
 
 public class MainActivity extends BaseActivity {
@@ -21,8 +23,10 @@ public class MainActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_main);
 		super.onCreate(savedInstanceState);
-		
-		
+
+		if (!FusionField.solarUser.isUserLogin()) {
+			jumpToPage(LoginActivity.class, true);
+		}
 
 		List<PowerStation> list = new ArrayList<PowerStation>();
 		PowerStation station = new PowerStation();

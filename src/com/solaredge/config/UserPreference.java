@@ -18,12 +18,12 @@ public class UserPreference extends BasePreference {
 		putStringKey(AppConfig.PreferenceUser.USER_ID_KEY, memberID);
 	}
 
-	public String getUserMobile() {
-		return getStringKey(AppConfig.PreferenceUser.USER_MOBILE_KEY);
+	public String getUserUDID() {
+		return getStringKey(AppConfig.PreferenceUser.USER_UDID_KEY);
 	}
 
-	public void setUserMobile(String memberID) {
-		putStringKey(AppConfig.PreferenceUser.USER_MOBILE_KEY, memberID);
+	public void setUserUDID(String memberID) {
+		putStringKey(AppConfig.PreferenceUser.USER_UDID_KEY, memberID);
 	}
 
 	public void clear() {
