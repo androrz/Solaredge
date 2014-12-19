@@ -3,7 +3,7 @@ package com.solaredge.server.response;
 import com.solaredge.entity.JsonResponse;
 
 
-public class AlaResponse {
+public class SlrResponse {
 
 	/**
 	 * This is the counterpart of various network request type. To facilitate

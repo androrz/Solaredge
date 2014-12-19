@@ -1,12 +1,12 @@
 package com.solaredge.server;
 
 import com.solaredge.fusion.FusionCode;
-import com.solaredge.server.response.AlaResponse;
+import com.solaredge.server.response.SlrResponse;
 
 /**
  * Result code returned by service interface. It's returned to upper layer
  * asynchronously through the resultCode parameter of
- * {@link AlaEventListener#handleEvent(int resultCode, AlaResponse response )}.
+ * {@link AlaEventListener#handleEvent(int resultCode, SlrResponse response )}.
  */
 public class AsyncResultCode {
 

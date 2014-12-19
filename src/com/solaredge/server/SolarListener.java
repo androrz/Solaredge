@@ -1,7 +1,7 @@
 package com.solaredge.server;
 
-import com.solaredge.server.response.AlaResponse;
+import com.solaredge.server.response.SlrResponse;
 
 public interface SolarListener {
-	void handleEvent(int resultCode, AlaResponse response);
+	void handleEvent(int resultCode, SlrResponse response);
 }

@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-import com.solaredge.server.response.AlaResponse;
+import com.solaredge.server.response.SlrResponse;
 
 public class ListenerTransport implements SolarListener {
 
@@ -44,7 +44,7 @@ public class ListenerTransport implements SolarListener {
 	private void _handleMessage(Message msg) {
 		switch (msg.what) {
 		case TYPE_HANDLE_EVENT:
-			AlaResponse response = (AlaResponse) msg.obj;
+			SlrResponse response = (SlrResponse) msg.obj;
 			int resultCode = msg.arg1;
 			mListener.handleEvent(resultCode, response);
 			break;
@@ -60,7 +60,7 @@ public class ListenerTransport implements SolarListener {
 	}
 
 	@Override
-	public void handleEvent(int resultCode, AlaResponse response) {
+	public void handleEvent(int resultCode, SlrResponse response) {
 		Message msg = Message.obtain();
 		msg.what = TYPE_HANDLE_EVENT;
 		msg.obj = response;

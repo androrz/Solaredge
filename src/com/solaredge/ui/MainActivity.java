@@ -12,7 +12,7 @@ import com.solaredge.entity.JsonResponse;
 import com.solaredge.entity.PowerStation;
 import com.solaredge.fusion.FusionField;
 import com.solaredge.fusion.SvcNames;
-import com.solaredge.server.response.AlaResponse;
+import com.solaredge.server.response.SlrResponse;
 import com.solaredge.ui.adapter.PowerStationListAdapter;
 
 public class MainActivity extends BaseActivity {
@@ -26,7 +26,7 @@ public class MainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		if (!FusionField.solarUser.isUserLogin()) {
-			// jumpToPage(LoginActivity.class, true);
+			 jumpToPage(LoginActivity.class, true);
 		}
 
 		mBaseHandler.postDelayed(new Runnable() {
@@ -80,7 +80,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	@Override
-	public void handleEvent(int resultCode, AlaResponse response) {
+	public void handleEvent(int resultCode, SlrResponse response) {
 		if (!analyzeAsyncResultCode(resultCode, response)) {
 			return;
 		}

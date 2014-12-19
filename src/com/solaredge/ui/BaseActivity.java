@@ -30,7 +30,7 @@ import com.solaredge.R;
 import com.solaredge.server.AsyncResultCode;
 import com.solaredge.server.SolarListener;
 import com.solaredge.server.SolarManager;
-import com.solaredge.server.response.AlaResponse;
+import com.solaredge.server.response.SlrResponse;
 import com.solaredge.utils.LogX;
 import com.solaredge.view.SolarProgressDialog;
 
@@ -110,18 +110,18 @@ public class BaseActivity extends FragmentActivity implements OnClickListener,
 		super.onDestroy();
 	}
 
-	protected boolean analyzeAsyncResultCode(int code, AlaResponse response) {
+	protected boolean analyzeAsyncResultCode(int code, SlrResponse response) {
 		return analyzeAsyncResultCode(code, response, true);
 	}
 
-	protected boolean analyzeAsyncResultCode(int code, AlaResponse response,
+	protected boolean analyzeAsyncResultCode(int code, SlrResponse response,
 			boolean showDetail) {
 		if (response == null) {
 			dismissProgressBar();
 			return false;
 		}
 		if (response != null
-				&& response.getResponseEvent() == AlaResponse.RESPONSE_EVENT_SHOW_PROGRESS) {
+				&& response.getResponseEvent() == SlrResponse.RESPONSE_EVENT_SHOW_PROGRESS) {
 			showProgressDialog();
 			return false;
 		}
@@ -359,7 +359,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener,
 	}
 
 	@Override
-	public void handleEvent(int resultCode, AlaResponse response) {
+	public void handleEvent(int resultCode, SlrResponse response) {
 
 	}
 

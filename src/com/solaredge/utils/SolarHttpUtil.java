@@ -24,7 +24,7 @@ import com.solaredge.entity.JsonResponse;
 import com.solaredge.server.AsyncResultCode;
 import com.solaredge.server.ListenerTransport;
 import com.solaredge.server.SolarCommonResponse;
-import com.solaredge.server.response.AlaResponse;
+import com.solaredge.server.response.SlrResponse;
 
 public class SolarHttpUtil {
 	private HttpUtils mHttpClient = new HttpUtils();
@@ -98,24 +98,32 @@ public class SolarHttpUtil {
 		List<String> nameList = Arrays.asList(requestParam.paramNameArray());
 		Collections.sort(nameList);
 		for (String name : nameList) {
+			LogX.trace(TAG, name);
 			String value = requestParam.getParam(name);
 			if (value == null) {
 				value = "";
 			}
-			params.addBodyParameter(name, value);
+
 			if (builder.length() != 0) {
 				builder.append("&");
 			}
-
 			builder.append(name).append("=").append(value);
+			
+			if (name.equals("password")) {
+				value = EncryptUtil.encrypt(value.getBytes(),
+						AppConfig.SECURITY_KEY.substring(0, 9).getBytes());
+			}
+			params.addBodyParameter(name, value);
+
 		}
 
-		String signature = EncryptUtil.MD5(builder.toString()
-				+ AppConfig.SECURITY_KEY);
+		String paramsToSign = builder.toString() + "&" + AppConfig.SECURITY_KEY;
+		LogX.trace(TAG, "params to sign: " + paramsToSign);
+		String signature = EncryptUtil.MD5(paramsToSign);
 		params.addBodyParameter("sign", signature);
 
-		LogX.trace(TAG, "http request params: " + builder.toString() + "&sign="
-				+ signature);
+		LogX.trace(TAG, "---------HTTP REQUEST---------" + builder.toString()
+				+ "&sign=" + signature);
 
 		return params;
 	}
@@ -157,7 +165,7 @@ public class SolarHttpUtil {
 		int action = extraInfo.getInt("action");
 		int resultCode = AsyncResultCode.SUCCESS;
 
-		AlaResponse response = null;
+		SlrResponse response = null;
 		try {
 			JsonResponse jr = new JsonResponse(responseMessage);
 			SolarCommonResponse acr = new SolarCommonResponse();
@@ -176,15 +184,15 @@ public class SolarHttpUtil {
 			Bundle extraInfo) {
 		int resultCode = AsyncResultCode.FAIL;
 
-		AlaResponse ar = new AlaResponse();
+		SlrResponse ar = new SlrResponse();
 		ar.setResponseMessage(errorMessage);
 		ar.setCloseProgress(extraInfo.getBoolean("closeProgress"));
-		AlaResponse response = ar;
+		SlrResponse response = ar;
 
 		notifyResponse(resultCode, response);
 	}
 
-	private void notifyResponse(int resultCode, AlaResponse response) {
+	private void notifyResponse(int resultCode, SlrResponse response) {
 		LogX.trace(TAG, "Listener count: " + mListenerTransports.size());
 		LogX.trace(TAG, mListenerTransports.toString());
 		for (ListenerTransport transport : mListenerTransports) {
@@ -198,8 +206,8 @@ public class SolarHttpUtil {
 		}
 		boolean showProgress = extra.getBoolean("showProgress");
 		if (showProgress) {
-			AlaResponse response = new AlaResponse();
-			response.setResponseEvent(AlaResponse.RESPONSE_EVENT_SHOW_PROGRESS);
+			SlrResponse response = new SlrResponse();
+			response.setResponseEvent(SlrResponse.RESPONSE_EVENT_SHOW_PROGRESS);
 			int resultCode = AsyncResultCode.UNDEFINED;
 			notifyResponse(resultCode, response);
 		}

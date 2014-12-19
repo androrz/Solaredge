@@ -149,7 +149,7 @@ public class SolarManager {
 	public void userLogin(String userName, String userPassword) {
 		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_USER_LOGIN);
 		p.addParam("password", userPassword);
-		p.addParam("mobile", userName);
+		p.addParam("username", userName);
 
 		sendHttpRequest(p, true, true);
 	}

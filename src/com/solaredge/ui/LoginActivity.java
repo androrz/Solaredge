@@ -10,8 +10,9 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
 import com.solaredge.entity.JsonResponse;
+import com.solaredge.fusion.FusionField;
 import com.solaredge.fusion.SvcNames;
-import com.solaredge.server.response.AlaResponse;
+import com.solaredge.server.response.SlrResponse;
 import com.solaredge.utils.EncryptUtil;
 import com.solaredge.utils.LogX;
 
@@ -53,15 +54,13 @@ public class LoginActivity extends BaseActivity {
 			showToast("用户名或密码为空！");
 			return;
 		} else {
-			String cipherPassword = EncryptUtil.desCrypto(mUserPassword, "61ABC272");
-			LogX.trace("Solar", "cipher->" + cipherPassword);
-			mSolarManager.userLogin(mUserName, cipherPassword);
+			mSolarManager.userLogin(mUserName, mUserPassword);
 		}
 
 	}
 
 	@Override
-	public void handleEvent(int resultCode, AlaResponse response) {
+	public void handleEvent(int resultCode, SlrResponse response) {
 		if (!analyzeAsyncResultCode(resultCode, response)) {
 			return;
 		}
@@ -82,6 +81,10 @@ public class LoginActivity extends BaseActivity {
 			return;
 		}
 
-		jumpToPage(MainActivity.class, true);
+		if (jr.getBodyField("is_success").equals("1")) {
+			FusionField.solarUser.setMemberID(jr.getBodyField("session"));
+			jumpToPage(MainActivity.class, true);
+		}
+
 	}
 }
