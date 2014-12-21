@@ -21,6 +21,7 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.solaredge.config.AppConfig;
 import com.solaredge.entity.HttpRequestParam;
 import com.solaredge.entity.JsonResponse;
+import com.solaredge.fusion.FusionField;
 import com.solaredge.server.AsyncResultCode;
 import com.solaredge.server.ListenerTransport;
 import com.solaredge.server.SolarCommonResponse;
@@ -81,7 +82,7 @@ public class SolarHttpUtil {
 			}
 		};
 
-		requestParam.addParam("req_session", "");
+		requestParam.addParam("req_session", FusionField.solarUser.getMemberID());
 		requestParam.addParam("req_language", "0");
 		requestParam.addParam("format", "json");
 		requestParam.addParam("partner", "Tspec");

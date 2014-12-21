@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -77,9 +78,10 @@ public class InverterListAdapter extends BaseAdapter {
 		}
 
 		holder.inverterName.setText(mItems.get(position).getInverterName());
-		holder.groupNumber.setText(mItems.get(position).getmGroupNumber());
-		holder.clusterNumber.setText(mItems.get(position).getmClusterNumber());
-		holder.angle.setText(mItems.get(position).getmAngle());
+		holder.groupNumber.setText(mItems.get(position).getmGroupNumber() + "");
+		holder.clusterNumber.setText(mItems.get(position).getmClusterNumber()
+				+ "");
+		holder.angle.setText(mItems.get(position).getmAngle() + "");
 		holder.modify.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -89,6 +91,11 @@ public class InverterListAdapter extends BaseAdapter {
 				mContext.startActivity(intent);
 			}
 		});
+		if (position % 2 == 0) {
+			convertView.setBackgroundColor(Color.parseColor("#CCCCCC"));
+		} else {
+			convertView.setBackgroundColor(Color.parseColor("#E4E4E4"));
+		}
 
 		return convertView;
 	}

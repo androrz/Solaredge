@@ -26,7 +26,7 @@ public class MainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		if (!FusionField.solarUser.isUserLogin()) {
-			 jumpToPage(LoginActivity.class, true);
+			jumpToPage(LoginActivity.class, true);
 		}
 
 		mBaseHandler.postDelayed(new Runnable() {
@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity {
 			public void run() {
 				// mSolarManager.getStationList();
 			}
-		}, 200);
+		}, 100);
 
 		List<PowerStation> list = new ArrayList<PowerStation>();
 		PowerStation station = new PowerStation();

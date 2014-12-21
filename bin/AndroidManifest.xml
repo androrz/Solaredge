@@ -47,7 +47,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.solaredge.ui.MainActivity"
+            android:name=".ui.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoTitleBarTheme" >
             <intent-filter>
@@ -57,24 +57,33 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.solaredge.ui.SelectLanguageActivity"
+            android:name=".ui.SelectLanguageActivity"
             android:parentActivityName=".ui.BaseActivity"
             android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
-            android:name="com.solaredge.ui.LoginActivity"
+            android:name=".ui.LoginActivity"
             android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
-            android:name="com.solaredge.ui.InverterListActivity"
+            android:name=".ui.InverterListActivity"
             android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
-            android:name="com.solaredge.ui.ModifyInverterActivity"
+            android:name=".ui.ModifyInverterActivity"
             android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
-            android:name="com.solaredge.ui.InverterLayoutActivity"
+            android:name=".ui.InverterLayoutActivity"
+            android:theme="@style/NoTitleBarTheme" >
+        </activity>
+        <activity
+            android:name="com.solaredge.ui.ModifyLayoutActivity"
+            android:theme="@style/NoTitleBarTheme" >
+        </activity>
+        <activity
+            android:name="com.solaredge.zxing.CaptureActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/NoTitleBarTheme" >
         </activity>
     </application>

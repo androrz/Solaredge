@@ -31,7 +31,6 @@ public class SolarManager {
 	private final static String TAG = "Solar-SolarManager";
 
 	private static final int MSG_SAVE_SHOP_CITY = 0;
-	private static final int MSG_SAVE_FIX_CITY = 1;
 
 	/**
 	 * Get the singleton TissotManager instance.<br>
@@ -157,7 +156,7 @@ public class SolarManager {
 	public void getStationList() {
 		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_GET_STATION_LIST);
 
-		sendHttpRequest(p, false, true);
+		sendHttpRequest(p, true, true);
 	}
 
 	private class TissotWorkerHandler extends Handler {

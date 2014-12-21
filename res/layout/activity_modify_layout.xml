@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/i_title_bar"
+        layout="@layout/title_bar_without_logo" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@+id/i_title_bar"
+        android:background="@color/common_gray"
+        android:gravity="center_vertical"
+        android:textSize="18sp"
+        android:text="点击选中后隐藏/显示组件"
+        android:textColor="@color/white" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/odd" >
+
+        <ImageButton
+            android:id="@+id/i_reset"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/icon_reset" />
+
+        <Button
+            android:id="@+id/b_ok"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/icon_reset"
+            android:text="完成" />
+    </RelativeLayout>
+
+</RelativeLayout>
