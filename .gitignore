@@ -43,5 +43,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# bin files
 bin/
+
+# generated files
 gen/
