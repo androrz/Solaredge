@@ -33,6 +33,8 @@ public class PowerStationListAdapter extends BaseAdapter {
 		if (list == null || list.size() == 0) {
 			return;
 		}
+		mItems = list;
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class PowerStationListAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
 		if (convertView == null) {
 			convertView = LayoutInflater.from(mContext).inflate(
@@ -73,6 +75,10 @@ public class PowerStationListAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(mContext, InverterListActivity.class);
+				intent.putExtra("station_id", mItems.get(position)
+						.getStationId());
+				intent.putExtra("station_name", mItems.get(position)
+						.getStationName());
 				mContext.startActivity(intent);
 			}
 		});

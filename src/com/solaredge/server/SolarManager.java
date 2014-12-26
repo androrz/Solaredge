@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-import com.lidroid.xutils.DbUtils;
 import com.solaredge.SolarApp;
 import com.solaredge.entity.HttpRequestParam;
 import com.solaredge.fusion.SvcNames;
@@ -19,7 +18,6 @@ public class SolarManager {
 
 	private TissotWorkerHandler mSolarHandler = null;
 	private SolarHttpUtil mSolarHttpUtil = null;
-	private DbUtils dbUtils;
 
 	// Map from AlaListeners to their associated ListenerTransport objects
 	private HashMap<SolarListener, ListenerTransport> mListeners = new HashMap<SolarListener, ListenerTransport>();
@@ -58,7 +56,6 @@ public class SolarManager {
 		mSolarHttpUtil = SolarHttpUtil.getInstance(mContext);
 		mSolarHandler = new TissotWorkerHandler(SolarApp
 				.getSolarHandlerThread().getLooper());
-		dbUtils = DbUtils.create(mContext, "tissot");
 	}
 
 	void initialize() {
@@ -155,6 +152,13 @@ public class SolarManager {
 
 	public void getStationList() {
 		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_GET_STATION_LIST);
+
+		sendHttpRequest(p, true, true);
+	}
+	
+	public void getInverterList(String stationId) {
+		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_GET_INVERTERS);
+		p.addParam("req_stationid", stationId);
 
 		sendHttpRequest(p, true, true);
 	}

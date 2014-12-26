@@ -3,6 +3,10 @@ package com.solaredge.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -33,20 +37,20 @@ public class MainActivity extends BaseActivity {
 
 			@Override
 			public void run() {
-				// mSolarManager.getStationList();
+				mSolarManager.getStationList();
 			}
 		}, 100);
 
 		List<PowerStation> list = new ArrayList<PowerStation>();
-		PowerStation station = new PowerStation();
-		station.setStationId("001");
-		station.setStationName("赛拉弗");
-		list.add(station);
-
-		station = new PowerStation();
-		station.setStationId("002");
-		station.setStationName("东方电气");
-		list.add(station);
+		// PowerStation station = new PowerStation();
+		// station.setStationId("001");
+		// station.setStationName("赛拉弗");
+		// list.add(station);
+		//
+		// station = new PowerStation();
+		// station.setStationId("002");
+		// station.setStationName("东方电气");
+		// list.add(station);
 		mAdapter = new PowerStationListAdapter(this, list);
 		mList.setAdapter(mAdapter);
 	}
@@ -101,6 +105,22 @@ public class MainActivity extends BaseActivity {
 			return;
 		}
 
+		List<PowerStation> list = new ArrayList<PowerStation>();
+
+		try {
+			JSONArray array = jr.getBodyArray("stations");
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject object = array.getJSONObject(i);
+				PowerStation station = new PowerStation();
+				station.setStationId(object.getString("stationid"));
+				station.setStationName(object.getString("name"));
+				list.add(station);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		mAdapter.setItems(list);
 	}
 
 }

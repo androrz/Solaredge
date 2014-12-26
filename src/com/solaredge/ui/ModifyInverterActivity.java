@@ -5,8 +5,8 @@ import kankan.wheel.widget.OnWheelScrollListener;
 import kankan.wheel.widget.WheelView;
 import kankan.wheel.widget.adapters.ArrayWheelAdapter;
 import kankan.wheel.widget.adapters.NumericWheelAdapter;
-import android.R.integer;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -27,6 +27,9 @@ public class ModifyInverterActivity extends BaseActivity {
 	@ViewInject(R.id.t_angle)
 	private TextView mAngle;
 
+	@ViewInject(R.id.b_delete_inverter)
+	private Button mDeleteInverterBT;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -38,17 +41,12 @@ public class ModifyInverterActivity extends BaseActivity {
 		initArrayWheel(R.id.w_angle);
 	}
 
-	// Wheel scrolled flag
-	private boolean wheelScrolled = false;
-
 	// Wheel scrolled listener
 	OnWheelScrollListener scrolledListener = new OnWheelScrollListener() {
 		public void onScrollingStarted(WheelView wheel) {
-			wheelScrolled = true;
 		}
 
 		public void onScrollingFinished(WheelView wheel) {
-			wheelScrolled = false;
 		}
 	};
 

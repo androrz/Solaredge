@@ -79,6 +79,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener,
 
 		initCaughtException();
 		ViewUtils.inject(this);
+		analyseIntent();
 		initWidgetProperty();
 		initWidgetEvent();
 
@@ -88,6 +89,24 @@ public class BaseActivity extends FragmentActivity implements OnClickListener,
 	protected boolean checkForms() {
 		return true;
 	}
+	
+	protected void analyseIntent() {
+        mIntent = getIntent();
+        Bundle bundle = mIntent.getExtras();
+        if (bundle != null) {
+            StringBuilder keySet = new StringBuilder();
+            keySet.append("[");
+            for (String key : bundle.keySet()) {
+                if (bundle.get(key) != null) {
+                    keySet.append("(").append(key).append(":").append(bundle.get(key).toString())
+                            .append("),");
+                }
+            }
+            keySet.deleteCharAt(keySet.indexOf(","));
+            keySet.append("]");
+            LogX.trace(TAG, "Intent Extra -- " + keySet.toString());
+        }
+    }
 
 	@Override
 	protected void onResume() {

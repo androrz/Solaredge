@@ -4,9 +4,22 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <include layout="@layout/title_bar_without_logo" />
+    <include
+        android:id="@+id/i_title_bar"
+        layout="@layout/title_bar_without_logo" />
+
+    <com.solaredge.view.PanZoomGridView
+        android:id="@+id/p_grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/r_bottom_bar"
+        android:layout_below="@+id/i_title_bar"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="15dp" />
 
     <RelativeLayout
+        android:id="@+id/r_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"

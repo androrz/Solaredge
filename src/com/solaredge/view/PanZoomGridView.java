@@ -24,10 +24,10 @@ import com.solaredge.R;
  * support zooming and panning.
  */
 
-public class LargeGridView extends PanZoomView {
+public class PanZoomGridView extends PanZoomView {
 
-	static public final int NumIconHorizontal = 9;
-	static public final int NumIconVertical = 4;
+	static public int NumIconHorizontal = 1;
+	static public int NumIconVertical = 1;
 	static public final int CanvasSizeMultiplier = 3;
 	static public final int NumSquaresAlongCanvas = CanvasSizeMultiplier
 			* NumIconHorizontal;
@@ -58,15 +58,15 @@ public class LargeGridView extends PanZoomView {
 	 * Constructors for the view.
 	 */
 
-	public LargeGridView(Context context) {
+	public PanZoomGridView(Context context) {
 		super(context);
 	}
 
-	public LargeGridView(Context context, AttributeSet attrs) {
+	public PanZoomGridView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public LargeGridView(Context context, AttributeSet attrs, int defStyle) {
+	public PanZoomGridView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 
@@ -101,9 +101,13 @@ public class LargeGridView extends PanZoomView {
 		y = 0;
 		Rect dest = new Rect(x, y, iw, ih);
 		float dx = 0, dy = 0;
-		for (int i = 0; i < NumIconVertical; i++) {
-			for (int j = 0; j < NumIconHorizontal; j++) {
-				b1 = bitmaps[grid[i][j]];
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid[i].length; j++) {
+				int bitmapIndex = grid[i][j];
+				if (bitmapIndex == -1) { // no image here
+					continue;
+				}
+				b1 = bitmaps[bitmapIndex];
 				dx = j * (mIconWidth + HORIZONTAL_GAP);
 				dy = i * (mIconHeight + VERTICAL_GAP);
 				int dxi = (int) Math.round(dx);
@@ -122,7 +126,7 @@ public class LargeGridView extends PanZoomView {
 		} else {
 			paint.setColor(Color.RED);
 		}
-		canvas.drawCircle(fx, fy, 4, paint);
+//		canvas.drawCircle(fx, fy, 4, paint);
 	}
 
 	/**
@@ -163,6 +167,13 @@ public class LargeGridView extends PanZoomView {
 
 		}
 		return mGrid;
+	}
+
+	public void setGridArray(int[][] matrix) {
+		mGrid = matrix;
+		NumIconHorizontal = mGrid[0].length;
+		NumIconVertical = mGrid.length;
+		reset();
 	}
 
 	/**

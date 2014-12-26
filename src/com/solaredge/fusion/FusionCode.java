@@ -18,4 +18,7 @@ public class FusionCode {
 	public static final String JSON_RSP_NO_RECORDS = "0002";
 	public static final String JSON_RSP_EXCHANGE_FAIL = "8888";
 	public static final String JSON_RSP_SVC_EXCEPTION = "9999";
+
+	public static String DB_FILE_NAME = "solar.db";
+	public final static int DB_VERSION = 1;
 }

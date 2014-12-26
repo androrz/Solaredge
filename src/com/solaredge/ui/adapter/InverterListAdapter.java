@@ -37,6 +37,11 @@ public class InverterListAdapter extends BaseAdapter {
 		}
 
 		mItems = list;
+		notifyDataSetChanged();
+	}
+
+	public List<Inverter> getItem() {
+		return mItems;
 	}
 
 	@Override
