@@ -9,14 +9,15 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
-import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
+import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
 import com.solaredge.entity.Inverter;
 import com.solaredge.entity.JsonResponse;
-import com.solaredge.entity.PowerStation;
 import com.solaredge.fusion.SvcNames;
 import com.solaredge.server.response.SlrResponse;
 import com.solaredge.ui.adapter.InverterListAdapter;
@@ -26,6 +27,10 @@ public class InverterListActivity extends BaseActivity {
 
 	private ListView mList;
 	private InverterListAdapter mAdapter;
+	private String mStationId;
+
+	@ViewInject(R.id.b_add_inverter)
+	private Button mAddInverterBT;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,31 +38,16 @@ public class InverterListActivity extends BaseActivity {
 		setContentView(R.layout.activity_inverter_list);
 		super.onCreate(savedInstanceState);
 
+		mStationId = mIntent.getStringExtra("station_id");
 		mBaseHandler.postDelayed(new Runnable() {
 
 			@Override
 			public void run() {
-				mSolarManager.getInverterList(mIntent
-						.getStringExtra("station_id"));
+				mSolarManager.getInverterList(mStationId);
 			}
 		}, 100);
 
 		List<Inverter> list = new ArrayList<Inverter>();
-		// Inverter inverter = new Inverter();
-		// inverter.setInverterId("001");
-		// inverter.setInverterName("逆变器1");
-		// inverter.setmGroupNumber(10);
-		// inverter.setmClusterNumber(8);
-		// inverter.setmAngle(0);
-		// list.add(inverter);
-		//
-		// inverter = new Inverter();
-		// inverter.setInverterId("002");
-		// inverter.setInverterName("逆变器2");
-		// inverter.setmGroupNumber(5);
-		// inverter.setmClusterNumber(10);
-		// inverter.setmAngle(90);
-		// list.add(inverter);
 		mAdapter = new InverterListAdapter(this, list);
 		mList.setAdapter(mAdapter);
 	}
@@ -91,6 +81,11 @@ public class InverterListActivity extends BaseActivity {
 		super.onClick(v);
 	}
 
+	@OnClick(R.id.b_add_inverter)
+	private void onAddInverterClick(View view) {
+		jumpToPage(ModifyInverterActivity.class);
+	}
+
 	@Override
 	public void handleEvent(int resultCode, SlrResponse response) {
 		if (!analyzeAsyncResultCode(resultCode, response)) {
@@ -119,6 +114,7 @@ public class InverterListActivity extends BaseActivity {
 			for (int i = 0; i < array.length(); i++) {
 				JSONObject object = array.getJSONObject(i);
 				Inverter inverter = new Inverter();
+				inverter.setmStationId(mStationId);
 				inverter.setInverterId(object.getString("id"));
 				inverter.setInverterName(object.getString("label"));
 				inverter.setmGroupNumber(Integer.valueOf(object
@@ -128,7 +124,7 @@ public class InverterListActivity extends BaseActivity {
 				inverter.setmAngle(Integer.valueOf(object.getString("tilt")));
 				list.add(inverter);
 				try {
-					DbHelp.getDbUtils(this).save(inverter);
+					DbHelp.getDbUtils(this).saveOrUpdate(inverter);
 				} catch (DbException e) {
 					e.printStackTrace();
 				}

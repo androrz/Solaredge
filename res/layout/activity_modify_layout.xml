@@ -9,16 +9,39 @@
         layout="@layout/title_bar_without_logo" />
 
     <TextView
+        android:id="@+id/t_inverter_label"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_below="@+id/i_title_bar"
         android:background="@color/common_gray"
         android:gravity="center_vertical"
-        android:textSize="18sp"
+        android:paddingLeft="10dp"
         android:text="点击选中后隐藏/显示组件"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <com.solaredge.view.PanZoomGridView
+        android:id="@+id/p_grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/i_delete_plate"
+        android:layout_below="@+id/t_inverter_label"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="15dp" />
+
+    <ImageButton
+        android:id="@+id/i_delete_plate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/r_bottom_bar"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/icon_delete" />
 
     <RelativeLayout
+        android:id="@+id/r_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
@@ -33,7 +56,7 @@
 
         <Button
             android:id="@+id/b_ok"
-            android:layout_width="60dp"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/icon_reset"

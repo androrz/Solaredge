@@ -1,24 +1,31 @@
 package com.solaredge.entity;
 
+import java.io.Serializable;
+
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Table;
 
 @Table(name = "table_inverter")
-public class Inverter {
+public class Inverter implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	private String mInverterId;
+
+	@Column(column = "station_id")
+	private String mStationId;
 
 	@Column(column = "inverter_name")
 	private String mInverterName;
 
 	@Column(column = "group_number")
 	private int mGroupNumber;
-	
+
 	@Column(column = "cluster_number")
 	private int mClusterNumber;
-	
+
 	@Column(column = "angle")
 	private int mAngle;
 
@@ -35,7 +42,7 @@ public class Inverter {
 		this.mAngle = mAngle;
 	}
 
-	public String getStationId() {
+	public String getInverterId() {
 		return mInverterId;
 	}
 
@@ -74,4 +81,13 @@ public class Inverter {
 	public void setmAngle(int mAngle) {
 		this.mAngle = mAngle;
 	}
+
+	public String getmStationId() {
+		return mStationId;
+	}
+
+	public void setmStationId(String mStationId) {
+		this.mStationId = mStationId;
+	}
+
 }

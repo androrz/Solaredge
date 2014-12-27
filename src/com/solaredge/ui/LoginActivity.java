@@ -13,8 +13,6 @@ import com.solaredge.entity.JsonResponse;
 import com.solaredge.fusion.FusionField;
 import com.solaredge.fusion.SvcNames;
 import com.solaredge.server.response.SlrResponse;
-import com.solaredge.utils.EncryptUtil;
-import com.solaredge.utils.LogX;
 
 public class LoginActivity extends BaseActivity {
 

@@ -2,6 +2,7 @@ package com.solaredge.ui;
 
 import java.util.List;
 
+import android.R.integer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -34,41 +35,8 @@ public class InverterLayoutActivity extends BaseActivity {
 		setContentView(R.layout.activity_inverter_layout);
 		super.onCreate(savedInstanceState);
 
-		try {
-			List<Inverter> list = DbHelp.getDbUtils(this).findAll(
-					Inverter.class);
-			int row = 0, col = 0;
-			for (int i = 0; i < list.size(); i++) {
-				Inverter inverter = list.get(i);
-				col = Math.max(col, inverter.getmClusterNumber());
-				row += inverter.getmGroupNumber();
-			}
-			int[][] matrix = new int[row][col];
-			LogX.trace(TAG, "row: " + row + " col: " + col);
-			int r = 0;
-			for (int i = 0; i < list.size(); i++) {
-				Inverter inverter = list.get(i);
-				for (int m = 0; m < inverter.getmGroupNumber(); m++) {
-					int n = 0;
-					for (; n < inverter.getmClusterNumber(); n++) {
-						if (inverter.getmAngle() == 0) {
-							matrix[r][n] = 0;
-						} else {
-							matrix[r][n] = 1;
-						}
-					}
-					if (n < col) {
-						for (int z = n; z < col; z++) {
-							matrix[r][z] = -1;
-						}
-					}
-					r++;
-				}
-			}
-			mGridView.setGridArray(matrix);
-		} catch (DbException e) {
-			e.printStackTrace();
-		}
+		int[][] matrix = mSolarManager.getInverterMatrix();
+		mGridView.setGridArray(matrix);
 	}
 
 	@Override

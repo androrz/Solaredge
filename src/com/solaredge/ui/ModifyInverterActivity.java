@@ -6,12 +6,20 @@ import kankan.wheel.widget.WheelView;
 import kankan.wheel.widget.adapters.ArrayWheelAdapter;
 import kankan.wheel.widget.adapters.NumericWheelAdapter;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
+import com.solaredge.entity.Inverter;
+import com.solaredge.entity.JsonResponse;
+import com.solaredge.fusion.SvcNames;
+import com.solaredge.server.response.SlrResponse;
 
 public class ModifyInverterActivity extends BaseActivity {
 
@@ -30,23 +38,97 @@ public class ModifyInverterActivity extends BaseActivity {
 	@ViewInject(R.id.b_delete_inverter)
 	private Button mDeleteInverterBT;
 
+	private Inverter mInverter = null;
+
+	private TextWatcher mTextWatcher = new TextWatcher() {
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			mInverter.setInverterName(s.toString());
+		}
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
 		setContentView(R.layout.activity_modify_inverter);
 		super.onCreate(savedInstanceState);
 
+		mXFunc2.setVisibility(View.VISIBLE);
+		mXFunc2.setImageResource(R.drawable.drw_confirm);
+
 		initWheel(R.id.w_cluster_number);
 		initWheel(R.id.w_group_number);
 		initArrayWheel(R.id.w_angle);
+
+		Bundle bundle = mIntent.getExtras();
+		if (bundle != null && bundle.containsKey("inverter")) {
+			mInverter = (Inverter) bundle.getSerializable("inverter");
+		}
+
+		if (mInverter != null) {
+			getWheel(R.id.w_group_number).setCurrentItem(
+					mInverter.getmGroupNumber() - 1);
+			getWheel(R.id.w_cluster_number).setCurrentItem(
+					mInverter.getmClusterNumber() - 1);
+			getWheel(R.id.w_angle).setCurrentItem(
+					mInverter.getmAngle() == 0 ? 0 : 1);
+			mGroupNumber.setText(mInverter.getmGroupNumber() + "");
+			mClusterNumber.setText(mInverter.getmClusterNumber() + "");
+			mAngle.setText(mInverter.getmAngle() + "");
+			mInverterName.setText(mInverter.getInverterName());
+		} else {
+			mInverter = new Inverter();
+			mDeleteInverterBT.setVisibility(View.GONE);
+		}
+
+		mInverterName.addTextChangedListener(mTextWatcher);
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.b_func2:
+			mSolarManager.modifyInverter(mInverter.getmStationId(),
+					mInverter.getInverterId(), mInverter.getInverterName(),
+					mInverter.getmGroupNumber(), mInverter.getmClusterNumber(),
+					mInverter.getmAngle());
+			break;
+
+		default:
+			break;
+		}
+		super.onClick(v);
+	}
+
+	@OnClick(R.id.b_delete_inverter)
+	private void onDeleteInverterClick(View view) {
+		mSolarManager.deleteInverter(mInverter.getmStationId(),
+				mInverter.getInverterId());
 	}
 
 	// Wheel scrolled listener
 	OnWheelScrollListener scrolledListener = new OnWheelScrollListener() {
 		public void onScrollingStarted(WheelView wheel) {
+
 		}
 
 		public void onScrollingFinished(WheelView wheel) {
+
 		}
 	};
 
@@ -54,12 +136,15 @@ public class ModifyInverterActivity extends BaseActivity {
 	private OnWheelChangedListener changedListener = new OnWheelChangedListener() {
 		public void onChanged(WheelView wheel, int oldValue, int newValue) {
 			if (wheel.getId() == R.id.w_group_number) {
-				mGroupNumber.setText(newValue + "");
+				mGroupNumber.setText(newValue + 1 + "");
+				mInverter.setmGroupNumber(newValue + 1);
 			} else if (wheel.getId() == R.id.w_cluster_number) {
-				mClusterNumber.setText(newValue + "");
+				mClusterNumber.setText(newValue + 1 + "");
+				mInverter.setmClusterNumber(newValue + 1);
 			} else if (wheel.getId() == R.id.w_angle) {
 				int val = newValue == 0 ? 0 : 90;
 				mAngle.setText(val + "");
+				mInverter.setmAngle(val);
 			}
 		}
 	};
@@ -72,8 +157,8 @@ public class ModifyInverterActivity extends BaseActivity {
 	 */
 	private void initWheel(int id) {
 		WheelView wheel = getWheel(id);
-		wheel.setViewAdapter(new NumericWheelAdapter(this, 0, 9));
-		wheel.setCurrentItem((int) (Math.random() * 10));
+		wheel.setViewAdapter(new NumericWheelAdapter(this, 1, 30));
+		wheel.setCurrentItem(0);
 
 		wheel.addChangingListener(changedListener);
 		wheel.addScrollingListener(scrolledListener);
@@ -101,5 +186,27 @@ public class ModifyInverterActivity extends BaseActivity {
 	 */
 	private WheelView getWheel(int id) {
 		return (WheelView) findViewById(id);
+	}
+
+	@Override
+	public void handleEvent(int resultCode, SlrResponse response) {
+		if (!analyzeAsyncResultCode(resultCode, response)) {
+			return;
+		}
+
+		int action = response.getResponseEvent();
+		JsonResponse jr = response.getResponseContent();
+		switch (action) {
+		case SvcNames.WSN_CREATE_INVERTERS:
+
+			break;
+
+		case SvcNames.WSN_DELETE_INVERTER:
+
+			break;
+
+		default:
+			break;
+		}
 	}
 }

@@ -47,17 +47,21 @@ public class PanZoomGridView extends PanZoomView {
 
 	private Random mRandomObject = new Random(System.currentTimeMillis());
 	private final int[] mImageIds = { R.drawable.icon_plate,
-			R.drawable.icon_plate_h, R.drawable.icon_plate_selected,
+			R.drawable.icon_plate_selected, R.drawable.icon_plate_h,
 			R.drawable.icon_plate_selected_h };
 	private Bitmap[] mBitmaps = null;
 	private int[][] mGrid = null;
 
 	private boolean mSetUp = false;
 
+	private int mRow = -1;
+	private int mCol = -1;
+	private OnGridClickListener mListener;
+	private boolean mGridSelectable = false;
+
 	/**
 	 * Constructors for the view.
 	 */
-
 	public PanZoomGridView(Context context) {
 		super(context);
 	}
@@ -107,6 +111,9 @@ public class PanZoomGridView extends PanZoomView {
 				if (bitmapIndex == -1) { // no image here
 					continue;
 				}
+				if (i == mRow && j == mCol && mGridSelectable) {
+					bitmapIndex += 1;
+				}
 				b1 = bitmaps[bitmapIndex];
 				dx = j * (mIconWidth + HORIZONTAL_GAP);
 				dy = i * (mIconHeight + VERTICAL_GAP);
@@ -126,7 +133,7 @@ public class PanZoomGridView extends PanZoomView {
 		} else {
 			paint.setColor(Color.RED);
 		}
-//		canvas.drawCircle(fx, fy, 4, paint);
+		// canvas.drawCircle(fx, fy, 4, paint);
 	}
 
 	/**
@@ -174,6 +181,14 @@ public class PanZoomGridView extends PanZoomView {
 		NumIconHorizontal = mGrid[0].length;
 		NumIconVertical = mGrid.length;
 		reset();
+	}
+
+	public boolean getSelectable() {
+		return mGridSelectable;
+	}
+
+	public void setSelectable(boolean isSelectable) {
+		mGridSelectable = isSelectable;
 	}
 
 	/**
@@ -239,6 +254,10 @@ public class PanZoomGridView extends PanZoomView {
 		final int action = event.getAction();
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_UP:
+			long interval = System.currentTimeMillis() - mTimestamp;
+			if (interval > CLICK_TIME_INTERVAL) {
+				break;
+			}
 			int x = (int) event.getX();
 			int y = (int) event.getY();
 
@@ -252,10 +271,26 @@ public class PanZoomGridView extends PanZoomView {
 					/ (int) ((mIconHeight + HORIZONTAL_GAP) * mScaleFactor);
 
 			Log.d("Alading", "row: " + row + " col: " + col);
+			if (row < mGrid.length && row >= 0 && col < mGrid[0].length
+					&& col >= 0) {
+
+				if (mGrid[row][col] >= 0) {
+					mRow = row;
+					mCol = col;
+				}
+
+				if (mListener != null) {
+					mListener.onGridClick(row, col);
+				}
+			}
 			break;
 		}
 
 		return super.onTouchEvent(event);
+	}
+
+	public void addClickListener(OnGridClickListener listener) {
+		mListener = listener;
 	}
 
 	public void reset() {
@@ -320,4 +355,12 @@ public class PanZoomGridView extends PanZoomView {
 		return true;
 	}
 
+	public void deleteGridItem(int row, int col) {
+		mGrid[row][col] = -1;
+		invalidate();
+	}
+
+	public interface OnGridClickListener {
+		public void onGridClick(int row, int col);
+	}
 } // end class

@@ -42,6 +42,7 @@ public class PanZoomView extends View {
 	protected float mLastTouchY;
 
 	protected static final int INVALID_POINTER_ID = -1;
+	protected static final long CLICK_TIME_INTERVAL = 100;
 
 	// The ‘active pointer’ is the one currently moving our object.
 	protected int mActivePointerId = INVALID_POINTER_ID;
@@ -54,6 +55,7 @@ public class PanZoomView extends View {
 	protected boolean mSupportsZoom = true;
 	protected boolean mSupportsScaleAtFocus = true;
 	protected boolean mTouched = false;
+	protected long mTimestamp = 0l;
 
 	public PanZoomView(Context context) {
 		this(context, null, 0);
@@ -201,6 +203,7 @@ public class PanZoomView extends View {
 			mLastTouchX = x;
 			mLastTouchY = y;
 			mActivePointerId = ev.getPointerId(0);
+			mTimestamp = System.currentTimeMillis();
 			break;
 		}
 

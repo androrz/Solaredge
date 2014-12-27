@@ -1,6 +1,7 @@
 package com.solaredge.server;
 
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,9 +9,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import com.lidroid.xutils.exception.DbException;
 import com.solaredge.SolarApp;
 import com.solaredge.entity.HttpRequestParam;
+import com.solaredge.entity.Inverter;
 import com.solaredge.fusion.SvcNames;
+import com.solaredge.utils.DbHelp;
 import com.solaredge.utils.LogX;
 import com.solaredge.utils.SolarHttpUtil;
 
@@ -155,12 +159,81 @@ public class SolarManager {
 
 		sendHttpRequest(p, true, true);
 	}
-	
+
 	public void getInverterList(String stationId) {
 		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_GET_INVERTERS);
 		p.addParam("req_stationid", stationId);
 
 		sendHttpRequest(p, true, true);
+	}
+
+	public void modifyInverter(String stationId, String inverterId,
+			String inverterName, int groupCount, int clusterCount, int angle) {
+		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_CREATE_INVERTERS);
+		p.addParam("req_stationid", stationId);
+		p.addParam("req_Id", inverterId);
+		p.addParam("req_label", inverterName);
+		p.addParam("req_listcount", groupCount + "");
+		p.addParam("req_prelistmoudler", clusterCount + "");
+		p.addParam("req_tilt", angle + "");
+
+		sendHttpRequest(p, true, true);
+	}
+	
+	public void deleteInverter(String stationId, String inverterId) {
+		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_CREATE_INVERTERS);
+		p.addParam("req_stationid", stationId);
+		p.addParam("req_Id", inverterId);
+
+		sendHttpRequest(p, true, true);
+	}
+	
+	public void setOptimizer(String stationId, String scouter) {
+		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_CREATE_INVERTERS);
+		p.addParam("req_stationid", stationId);
+		p.addParam("req_scouter", scouter);
+
+		sendHttpRequest(p, true, true);
+	}
+
+	public int[][] getInverterMatrix() {
+		int[][] matrix = null;
+		try {
+			List<Inverter> list = DbHelp.getDbUtils(mContext).findAll(
+					Inverter.class);
+			int row = 0, col = 0;
+			for (int i = 0; i < list.size(); i++) {
+				Inverter inverter = list.get(i);
+				col = Math.max(col, inverter.getmClusterNumber());
+				row += inverter.getmGroupNumber();
+			}
+			matrix = new int[row][col];
+			LogX.trace(TAG, "row: " + row + " col: " + col);
+			int r = 0;
+			for (int i = 0; i < list.size(); i++) {
+				Inverter inverter = list.get(i);
+				for (int m = 0; m < inverter.getmGroupNumber(); m++) {
+					int n = 0;
+					for (; n < inverter.getmClusterNumber(); n++) {
+						if (inverter.getmAngle() == 0) {
+							matrix[r][n] = 0;
+						} else {
+							matrix[r][n] = 1;
+						}
+					}
+					if (n < col) {
+						for (int z = n; z < col; z++) {
+							matrix[r][z] = -1;
+						}
+					}
+					r++;
+				}
+			}
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+
+		return matrix;
 	}
 
 	private class TissotWorkerHandler extends Handler {

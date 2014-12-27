@@ -5,6 +5,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -64,7 +65,7 @@ public class InverterListAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
 		if (convertView == null) {
 			convertView = LayoutInflater.from(mContext).inflate(
@@ -93,6 +94,9 @@ public class InverterListAdapter extends BaseAdapter {
 			public void onClick(View v) {
 				Intent intent = new Intent(mContext,
 						ModifyInverterActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("inverter", mItems.get(position));
+				intent.putExtras(bundle);
 				mContext.startActivity(intent);
 			}
 		});

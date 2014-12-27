@@ -34,7 +34,7 @@
 
         <Button
             android:id="@+id/b_modify"
-            android:layout_width="60dp"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/icon_reset"
