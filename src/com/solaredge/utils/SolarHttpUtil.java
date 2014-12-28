@@ -115,12 +115,11 @@ public class SolarHttpUtil {
 						AppConfig.SECURITY_KEY.substring(0, 9).getBytes());
 			}
 			params.addBodyParameter(name, value);
-
 		}
 
 		String paramsToSign = builder.toString() + "&" + AppConfig.SECURITY_KEY;
 		LogX.trace(TAG, "params to sign: " + paramsToSign);
-		String signature = EncryptUtil.MD5(paramsToSign);
+		String signature = EncryptUtil.MD5_2(paramsToSign);
 		params.addBodyParameter("sign", signature);
 
 		LogX.trace(TAG, "---------HTTP REQUEST---------" + builder.toString()
