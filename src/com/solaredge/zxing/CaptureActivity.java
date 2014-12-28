@@ -14,7 +14,6 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -26,6 +25,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
@@ -40,9 +40,11 @@ import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
+import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
 import com.solaredge.ui.BaseActivity;
+import com.solaredge.view.PanZoomGridView;
 import com.solaredge.zxing.camera.CameraManager;
 import com.solaredge.zxing.decoding.CaptureActivityHandler;
 import com.solaredge.zxing.decoding.InactivityTimer;
@@ -55,6 +57,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 	private static final int REQUEST_CODE = 234;
 	private CaptureActivityHandler handler;
 	private ViewfinderView viewfinderView;
+
 	private boolean hasSurface;
 	private Vector<BarcodeFormat> decodeFormats;
 	private String characterSet;
@@ -65,6 +68,27 @@ public class CaptureActivity extends BaseActivity implements Callback {
 	private boolean vibrate;
 	private String photo_path;
 	private Bitmap scanBitmap;
+
+	@ViewInject(R.id.p_grid_view)
+	private PanZoomGridView mGridView;
+
+	@ViewInject(R.id.i_left)
+	private ImageButton mLeftIB;
+
+	@ViewInject(R.id.i_toggle)
+	private ImageButton mToggleDirectionIB;
+
+	@ViewInject(R.id.i_commit)
+	private ImageButton mCommitIB;
+
+	@ViewInject(R.id.i_right)
+	private ImageButton mRightIB;
+
+	private int mRow = 0;
+	private int mCol = 0;
+	private int mMaxRow;
+	private int mMaxCol;
+	private boolean mIsHorizontal = true;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -78,21 +102,60 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
 		hasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
+
+		int[][] matrix = mSolarManager.getInverterMatrix();
+		mMaxRow = matrix.length;
+		mMaxCol = matrix[0].length;
+		mGridView.setGridArray(matrix);
+		mGridView.setSelectable(true);
+		mGridView.setSelectedGrid(mRow, mCol);
 	}
 
 	@OnClick(R.id.i_left)
 	private void onMoveLeftClick(View view) {
+		if (mIsHorizontal) {
+			mCol--;
+			if (mCol < 0) {
+				mCol = 0;
+			}
+		} else {
+			mRow--;
+			if (mRow < 0) {
+				mRow = 0;
+			}
+		}
 
+		mGridView.setSelectedGrid(mRow, mCol);
 	}
 
 	@OnClick(R.id.i_right)
 	private void onMoveRightClick(View view) {
+		if (mIsHorizontal) {
+			mCol++;
+			if (mCol > mMaxCol - 1) {
+				mCol = mMaxCol - 1;
+			}
+		} else {
+			mRow++;
+			if (mRow > mMaxRow - 1) {
+				mRow = mMaxRow - 1;
+			}
+		}
 
+		mGridView.setSelectedGrid(mRow, mCol);
 	}
 
 	@OnClick(R.id.i_toggle)
 	private void onDirectionClick(View view) {
-
+		if (mIsHorizontal) {
+			mToggleDirectionIB
+					.setImageResource(R.drawable.icon_toggle_vertical);
+			mIsHorizontal = false;
+		} else {
+			mToggleDirectionIB
+					.setImageResource(R.drawable.icon_toggle_horizontal);
+			mIsHorizontal = true;
+		}
 	}
 
 	@OnClick(R.id.i_commit)
@@ -116,33 +179,11 @@ public class CaptureActivity extends BaseActivity implements Callback {
 	protected void light() {
 		if (flag == true) {
 			flag = false;
-			// 开闪光灯
 			CameraManager.get().openLight();
 		} else {
 			flag = true;
-			// 关闪光灯
 			CameraManager.get().offLight();
-
 		}
-
-	}
-
-	private void photo() {
-
-		Intent innerIntent = new Intent(); // "android.intent.action.GET_CONTENT"
-		if (Build.VERSION.SDK_INT < 19) {
-			innerIntent.setAction(Intent.ACTION_GET_CONTENT);
-		} else {
-			innerIntent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-		}
-		// innerIntent.setAction(Intent.ACTION_GET_CONTENT);
-
-		innerIntent.setType("image/*");
-
-		Intent wrapperIntent = Intent.createChooser(innerIntent, "选择二维码图片");
-
-		CaptureActivity.this
-				.startActivityForResult(wrapperIntent, REQUEST_CODE);
 	}
 
 	@Override
@@ -183,7 +224,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
 					public void run() {
 
 						Result result = scanningImage(photo_path);
-						// String result = decode(photo_path);
 						if (result == null) {
 							Log.i("123", "   -----------");
 							Looper.prepare();
@@ -192,8 +232,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
 							Looper.loop();
 						} else {
 							Log.i("123result", result.toString());
-							// Log.i("123result", result.getText());
-							// 数据返回
 							String recode = recode(result.toString());
 							Intent data = new Intent();
 							data.putExtra("result", recode);
@@ -245,9 +283,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 		try {
 			result1 = reader1.decode(binaryBitmap);
 			String content = result1.getText();
-			Log.i("123content", content);
 		} catch (NotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -257,25 +293,16 @@ public class CaptureActivity extends BaseActivity implements Callback {
 		BinaryBitmap bitmap1 = new BinaryBitmap(new HybridBinarizer(source));
 		QRCodeReader reader = new QRCodeReader();
 		try {
-
 			return reader.decode(bitmap1, hints);
-
 		} catch (NotFoundException e) {
-
 			e.printStackTrace();
-
 		} catch (ChecksumException e) {
-
 			e.printStackTrace();
-
 		} catch (FormatException e) {
-
 			e.printStackTrace();
-
 		}
 
 		return null;
-
 	}
 
 	@Override
@@ -361,7 +388,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
 	}
 
 	public void drawViewfinder() {
-		// viewfinderView.drawViewfinder();
 
 	}
 
@@ -380,8 +406,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 	private void initBeepSound() {
 		if (playBeep && mediaPlayer == null) {
 			// The volume on STREAM_SYSTEM is not adjustable, and users found it
-			// too loud,
-			// so we now play on the music stream.
+			// too loud, so we now play on the music stream.
 			setVolumeControlStream(AudioManager.STREAM_MUSIC);
 			mediaPlayer = new MediaPlayer();
 			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -422,17 +447,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
 		}
 	};
 
-	/**
-	 * 中文乱码
-	 * 
-	 * 暂时解决大部分的中文乱码 但是还有部分的乱码无法解决 .
-	 * 
-	 * 如果您有好的解决方式 请联系 2221673069@qq.com
-	 * 
-	 * 我会很乐意向您请教 谢谢您
-	 * 
-	 * @return
-	 */
 	private String recode(String str) {
 		String formart = "";
 
@@ -441,27 +455,16 @@ public class CaptureActivity extends BaseActivity implements Callback {
 					.canEncode(str);
 			if (ISO) {
 				formart = new String(str.getBytes("ISO-8859-1"), "GB2312");
-				Log.i("1234      ISO8859-1", formart);
 			} else {
 				formart = str;
-				Log.i("1234      stringExtra", str);
 			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return formart;
 	}
 
-	/**
-	 * //TODO: TAOTAO 将bitmap由RGB转换为YUV //TOOD: 研究中
-	 * 
-	 * @param bitmap
-	 *            转换的图形
-	 * @return YUV数据
-	 */
 	public byte[] rgb2YUV(Bitmap bitmap) {
-		// 该方法来自QQ空间
 		int width = bitmap.getWidth();
 		int height = bitmap.getHeight();
 		int[] pixels = new int[width * height];
@@ -487,8 +490,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
 				v = v < 0 ? 0 : (v > 255 ? 255 : v);
 
 				yuv[i * width + j] = (byte) y;
-				// yuv[len + (i >> 1) * width + (j & ~1) + 0] = (byte) u;
-				// yuv[len + (i >> 1) * width + (j & ~1) + 1] = (byte) v;
 			}
 		}
 		return yuv;

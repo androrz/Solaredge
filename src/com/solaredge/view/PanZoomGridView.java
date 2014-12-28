@@ -191,6 +191,12 @@ public class PanZoomGridView extends PanZoomView {
 		mGridSelectable = isSelectable;
 	}
 
+	public void setSelectedGrid(int row, int col) {
+		mRow = row;
+		mCol = col;
+		invalidate();
+	}
+
 	/**
 	 * onDraw
 	 */
