@@ -7,15 +7,25 @@
     <string name="app_prompt">提示</string>
     <string name="app_confirm">确认</string>
     <string name="app_ok">确定</string>
+    <string name="app_modify">修改</string>
+    <string name="app_add">增加</string>
     <string name="app_cancel">取消</string>
+    <string name="app_complete">完成</string>
+    <string name="app_delete">删除</string>
     <string name="app_in_process">处理中...</string>
     <string name="app_crash">程序意外终止</string>
     <string name="label_code_tips">将条形码、二维码放入框内，即可自动扫描</string>
-    
     <string name="scan_inverter_label">扫描：%1$s</string>
     <string name="label_select_language">选择语言</string>
     <string name="label_lan_chinese">中文</string>
     <string name="label_lan_english">English</string>
     <string name="label_lan_japnese">日本語</string>
+    <string name="label_station_list">电站列表</string>
+    <string name="label_config_inverter">配置逆变器</string>
+    <string name="tip_modify_inverter_layout">点击选中后隐藏/显示组件</string>
+    <string name="label_inverter_name">名称</string>
+    <string name="label_inverter_group">组串</string>
+    <string name="label_inverter_cluster">每串数</string>
+    <string name="label_inverter_angle">角度</string>
 
 </resources>

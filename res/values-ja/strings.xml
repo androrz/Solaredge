@@ -8,6 +8,10 @@
     <string name="app_confirm">確認する</string>
     <string name="app_ok">決定する</string>
     <string name="app_cancel">キャンセル</string>
+    <string name="app_modify">修正する</string>
+    <string name="app_add">加える</string>
+    <string name="app_complete">実施する</string>
+    <string name="app_delete">削除</string>
     <string name="app_in_process">進行中...</string>
     <string name="app_crash">プログラムが予期せず終了しました</string>
     <string name="label_code_tips">バーコードはボックスにスキャンされ</string>
@@ -17,5 +21,12 @@
     <string name="label_lan_chinese">中文</string>
     <string name="label_lan_english">English</string>
     <string name="label_lan_japnese">日本語</string>
+    <string name="label_station_list">発電所リスト</string>
+    <string name="label_config_inverter">設定のインバータ</string>
+    <string name="tip_modify_inverter_layout">コンポーネントをクリックして選択します</string>
+    <string name="label_inverter_name">名前</string>
+    <string name="label_inverter_group">文字列</string>
+    <string name="label_inverter_cluster">ごとに数</string>
+    <string name="label_inverter_angle">角度</string>
 
 </resources>

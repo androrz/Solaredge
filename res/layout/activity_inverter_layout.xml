@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/icon_reset"
-            android:text="修改" />
+            android:text="@string/app_modify" />
 
         <ImageButton
             android:id="@+id/i_scan"

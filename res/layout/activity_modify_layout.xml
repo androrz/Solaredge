@@ -16,7 +16,7 @@
         android:background="@color/common_gray"
         android:gravity="center_vertical"
         android:paddingLeft="10dp"
-        android:text="点击选中后隐藏/显示组件"
+        android:text="@string/tip_modify_inverter_layout"
         android:textColor="@color/white"
         android:textSize="18sp" />
 
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/icon_reset"
-            android:text="完成" />
+            android:text="@string/app_complete" />
     </RelativeLayout>
 
 </RelativeLayout>

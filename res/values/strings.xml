@@ -8,14 +8,24 @@
     <string name="app_confirm">Confirm</string>
     <string name="app_ok">OK</string>
     <string name="app_cancel">Cancel</string>
+    <string name="app_modify">Modify</string>
+    <string name="app_add">Add</string>
+    <string name="app_complete">Complete</string>
+    <string name="app_delete">Delete</string>
     <string name="app_in_process">In Progress...</string>
     <string name="app_crash">Process terminated unexpectedly</string>
     <string name="label_code_tips">Put the barcode into the white box to start scan</string>
-    
     <string name="scan_inverter_label">Scan：%1$s</string>
     <string name="label_select_language">Choose Language</string>
     <string name="label_lan_chinese">中文</string>
     <string name="label_lan_english">English</string>
     <string name="label_lan_japnese">日本語</string>
+    <string name="label_station_list">Power Station List</string>
+    <string name="label_config_inverter">Config Inverter</string>
+    <string name="tip_modify_inverter_layout">Choose one plate to show or hide componet</string>
+    <string name="label_inverter_name">Name</string>
+    <string name="label_inverter_group">Group</string>
+    <string name="label_inverter_cluster">Cluster</string>
+    <string name="label_inverter_angle">Angle</string>
 
 </resources>

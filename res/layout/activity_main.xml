@@ -10,7 +10,7 @@
         style="@style/s_text_common"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="15dp"
-        android:text="电站列表" />
+        android:text="@string/label_station_list" />
 
     <ImageView
         android:layout_width="match_parent"

@@ -16,7 +16,7 @@
 
         <TextView
             style="@style/s_text_common"
-            android:text="名称" />
+            android:text="@string/label_inverter_name" />
 
         <EditText
             android:id="@+id/e_inverter_name"
@@ -75,21 +75,21 @@
             style="@style/s_text_common"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="组串" />
+            android:text="@string/label_inverter_group" />
 
         <TextView
             android:id="@+id/t_cluster_number"
             style="@style/s_text_common"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="每串数" />
+            android:text="@string/label_inverter_cluster" />
 
         <TextView
             android:id="@+id/t_angle"
             style="@style/s_text_common"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="角度" />
+            android:text="@string/label_inverter_angle" />
     </LinearLayout>
 
     <LinearLayout
@@ -128,6 +128,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="15dp"
-        android:text="删除" />
+        android:text="@string/app_delete" />
 
 </LinearLayout>
