@@ -18,5 +18,12 @@ public class SolarDefaultPreference extends BasePreference {
 		putBooleanKey(AppConfig.PreferenceSolar.SOLAR_SHORT_CUT_CREATED, true);
 	}
 
-	
+	public String getAppLanguage() {
+		return getStringKey(AppConfig.PreferenceSolar.SOLAR_SYSTEM_LANGUAGE);
+	}
+
+	public void setAppLanguage(String language) {
+		putStringKey(AppConfig.PreferenceSolar.SOLAR_SYSTEM_LANGUAGE, language);
+	}
+
 }

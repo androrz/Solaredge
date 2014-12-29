@@ -1,5 +1,6 @@
 package com.solaredge;
 
+import java.util.Locale;
 import java.util.UUID;
 
 import android.app.Application;
@@ -15,6 +16,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.DisplayMetrics;
 
+import com.solaredge.config.PreferenceFactory;
 import com.solaredge.entity.SolarUser;
 import com.solaredge.fusion.FusionCode;
 import com.solaredge.fusion.FusionField;
@@ -56,8 +58,14 @@ public class SolarApp extends Application {
 		return mAppHandler;
 	}
 
+	/**
+	 * Some event like screen rotation will trigger this method, with system
+	 * default locale in configuration. Should override the locale to which user
+	 * set in application preference.
+	 */
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
+		setLocale();
 		super.onConfigurationChanged(newConfig);
 	}
 
@@ -67,10 +75,26 @@ public class SolarApp extends Application {
 		LogX.trace(TAG, "Solar app on create");
 
 		sSolarApp = this;
+		setLocale();
 
 		initSystemParams();
 		initNetworkState();
 		initSolarUser();
+	}
+
+	public void setLocale() {
+		Locale locale = Locale.getDefault();
+		String language = PreferenceFactory.getDefaultPreference()
+				.getAppLanguage();
+		if (!language.equals("")) {
+			locale = new Locale(language);
+			Locale.setDefault(locale);
+		}
+		Configuration config = getBaseContext().getResources()
+				.getConfiguration();
+		config.locale = locale;
+		getBaseContext().getResources().updateConfiguration(config,
+				getBaseContext().getResources().getDisplayMetrics());
 	}
 
 	private void initSolarUser() {

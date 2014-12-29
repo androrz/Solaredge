@@ -63,7 +63,6 @@ public class InverterListActivity extends BaseActivity {
 
 		mList = (ListView) findViewById(R.id.l_power_station_list);
 
-		mServiceTitle.setText("集能易");
 		mXFunc2.setVisibility(View.VISIBLE);
 		mXFunc2.setImageResource(R.drawable.drw_confirm);
 	}

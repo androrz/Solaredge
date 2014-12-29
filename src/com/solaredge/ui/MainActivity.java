@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -23,6 +24,8 @@ public class MainActivity extends BaseActivity {
 
 	private ListView mList;
 	private PowerStationListAdapter mAdapter;
+
+	private static final int REQUEST_CHOOSE_LANGUAGE = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +45,6 @@ public class MainActivity extends BaseActivity {
 		}, 100);
 
 		List<PowerStation> list = new ArrayList<PowerStation>();
-		// PowerStation station = new PowerStation();
-		// station.setStationId("001");
-		// station.setStationName("赛拉弗");
-		// list.add(station);
-		//
-		// station = new PowerStation();
-		// station.setStationId("002");
-		// station.setStationName("东方电气");
-		// list.add(station);
 		mAdapter = new PowerStationListAdapter(this, list);
 		mList.setAdapter(mAdapter);
 	}
@@ -65,8 +59,6 @@ public class MainActivity extends BaseActivity {
 		super.initWidgetProperty();
 
 		mList = (ListView) findViewById(R.id.l_power_station_list);
-
-		mServiceTitle.setText("集能易");
 		mXFunc2.setVisibility(View.VISIBLE);
 	}
 
@@ -74,13 +66,20 @@ public class MainActivity extends BaseActivity {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.b_func2:
-			jumpToPage(SelectLanguageActivity.class);
+			jumpToPage(SelectLanguageActivity.class, null, true,
+					REQUEST_CHOOSE_LANGUAGE, false);
 			break;
 
 		default:
 			break;
 		}
 		super.onClick(v);
+	}
+
+	@Override
+	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
+		restartActivity();
+		super.onActivityResult(arg0, arg1, arg2);
 	}
 
 	@Override

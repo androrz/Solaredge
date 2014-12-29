@@ -1,6 +1,8 @@
 package com.solaredge.ui;
 
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.RadioButton;
@@ -8,6 +10,8 @@ import android.widget.RadioGroup;
 
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.solaredge.R;
+import com.solaredge.SolarApp;
+import com.solaredge.config.PreferenceFactory;
 
 public class SelectLanguageActivity extends BaseActivity implements
 		OnCheckedChangeListener {
@@ -23,6 +27,10 @@ public class SelectLanguageActivity extends BaseActivity implements
 
 	@ViewInject(R.id.r_japnese)
 	private RadioButton mLanJapnese;
+
+	private static final String LAN_CHINESE = "zh";
+	private static final String LAN_JAPNESE = "ja";
+	private static final String LAN_ENGLISH = "en";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +50,32 @@ public class SelectLanguageActivity extends BaseActivity implements
 	@Override
 	protected void initWidgetProperty() {
 		super.initWidgetProperty();
-		mServiceTitle.setText("集能易");
-		mLanGroup.check(R.id.r_chinese);
+		String lan = PreferenceFactory.getDefaultPreference().getAppLanguage();
+		if (TextUtils.isEmpty(lan)) {
+			mLanGroup.check(R.id.r_chinese);
+		} else {
+			if (lan.equals(LAN_CHINESE)) {
+				mLanGroup.check(R.id.r_chinese);
+			} else if (lan.equals(LAN_JAPNESE)) {
+				mLanGroup.check(R.id.r_japnese);
+			} else if (lan.equals(LAN_ENGLISH)) {
+				mLanGroup.check(R.id.r_english);
+			}
+		}
+
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.b_back:
+			setResult(RESULT_OK);
+			break;
+
+		default:
+			break;
+		}
+		super.onClick(v);
 	}
 
 	@Override
@@ -52,16 +84,26 @@ public class SelectLanguageActivity extends BaseActivity implements
 		if (!isChecked) {
 			return;
 		}
+
 		if (id == R.id.r_chinese) {
 			mLanEnglish.setChecked(false);
 			mLanJapnese.setChecked(false);
+			PreferenceFactory.getDefaultPreference()
+					.setAppLanguage(LAN_CHINESE);
 		} else if (id == R.id.r_english) {
 			mLanChinese.setChecked(false);
 			mLanJapnese.setChecked(false);
+			PreferenceFactory.getDefaultPreference()
+					.setAppLanguage(LAN_ENGLISH);
 		} else if (id == R.id.r_japnese) {
 			mLanEnglish.setChecked(false);
 			mLanChinese.setChecked(false);
+			PreferenceFactory.getDefaultPreference()
+					.setAppLanguage(LAN_JAPNESE);
 		}
+
+		SolarApp.getApplication().setLocale();
+		restartActivity();
 	}
 
 }

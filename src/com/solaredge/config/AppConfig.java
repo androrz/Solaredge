@@ -24,6 +24,7 @@ public class AppConfig {
 
 	public static class PreferenceSolar {
 		public static final String SOLAR_SHORT_CUT_CREATED = "short_cut_created";
+		public static final String SOLAR_SYSTEM_LANGUAGE = "app_lnguage";
 	}
 
 }

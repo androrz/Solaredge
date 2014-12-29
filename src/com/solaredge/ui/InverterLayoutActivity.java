@@ -1,20 +1,13 @@
 package com.solaredge.ui;
 
-import java.util.List;
-
-import android.R.integer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
-import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
-import com.solaredge.entity.Inverter;
-import com.solaredge.utils.DbHelp;
-import com.solaredge.utils.LogX;
 import com.solaredge.view.PanZoomGridView;
 import com.solaredge.zxing.CaptureActivity;
 
