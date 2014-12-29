@@ -1,5 +1,6 @@
 package com.solaredge.server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,11 +9,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 
 import com.lidroid.xutils.exception.DbException;
 import com.solaredge.SolarApp;
 import com.solaredge.entity.HttpRequestParam;
 import com.solaredge.entity.Inverter;
+import com.solaredge.entity.InverterGridItem;
 import com.solaredge.fusion.SvcNames;
 import com.solaredge.utils.DbHelp;
 import com.solaredge.utils.LogX;
@@ -32,7 +35,9 @@ public class SolarManager {
 
 	private final static String TAG = "Solar-SolarManager";
 
-	private static final int MSG_SAVE_SHOP_CITY = 0;
+	private static final int MSG_STORE_DELETED_GRID_ITEM = 0;
+
+	private HashMap<String, List<InverterGridItem>> mInverterGridMap = null;
 
 	/**
 	 * Get the singleton TissotManager instance.<br>
@@ -171,7 +176,9 @@ public class SolarManager {
 			String inverterName, int groupCount, int clusterCount, int angle) {
 		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_CREATE_INVERTERS);
 		p.addParam("req_stationid", stationId);
-		p.addParam("req_Id", inverterId);
+		if (!TextUtils.isEmpty(inverterId)) {
+			p.addParam("req_id", inverterId);
+		}
 		p.addParam("req_label", inverterName);
 		p.addParam("req_listcount", groupCount + "");
 		p.addParam("req_prelistmoudler", clusterCount + "");
@@ -179,15 +186,15 @@ public class SolarManager {
 
 		sendHttpRequest(p, true, true);
 	}
-	
+
 	public void deleteInverter(String stationId, String inverterId) {
-		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_CREATE_INVERTERS);
+		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_DELETE_INVERTER);
 		p.addParam("req_stationid", stationId);
-		p.addParam("req_Id", inverterId);
+		p.addParam("req_inverterid", inverterId);
 
 		sendHttpRequest(p, true, true);
 	}
-	
+
 	public void setOptimizer(String stationId, String scouter) {
 		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_CREATE_INVERTERS);
 		p.addParam("req_stationid", stationId);
@@ -196,33 +203,46 @@ public class SolarManager {
 		sendHttpRequest(p, true, true);
 	}
 
+	public void storeDeletedGridItem(int row, int col) {
+		Message message = Message.obtain();
+		message.arg1 = row;
+		message.arg2 = col;
+		message.what = MSG_STORE_DELETED_GRID_ITEM;
+		mSolarHandler.sendMessage(message);
+	}
+
 	public int[][] getInverterMatrix() {
 		int[][] matrix = null;
 		try {
 			List<Inverter> list = DbHelp.getDbUtils(mContext).findAll(
 					Inverter.class);
-			int row = 0, col = 0;
+			int maxRow = 0, maxCol = 0;
 			for (int i = 0; i < list.size(); i++) {
 				Inverter inverter = list.get(i);
-				col = Math.max(col, inverter.getmClusterNumber());
-				row += inverter.getmGroupNumber();
+				maxCol = Math.max(maxCol, inverter.getmClusterNumber());
+				maxRow += inverter.getmGroupNumber();
 			}
-			matrix = new int[row][col];
-			LogX.trace(TAG, "row: " + row + " col: " + col);
-			int r = 0;
+			matrix = new int[maxRow][maxCol];
+			int r = 0; // Total row index
 			for (int i = 0; i < list.size(); i++) {
 				Inverter inverter = list.get(i);
+				// (m, n) is the coordinate of plates of inverter
 				for (int m = 0; m < inverter.getmGroupNumber(); m++) {
 					int n = 0;
 					for (; n < inverter.getmClusterNumber(); n++) {
-						if (inverter.getmAngle() == 0) {
-							matrix[r][n] = 0;
+						if (isInverterGridItemDeleted(inverter.getInverterId(),
+								m, n)) {
+							matrix[r][n] = -1;
 						} else {
-							matrix[r][n] = 1;
+							if (inverter.getmAngle() == 0) {
+								matrix[r][n] = 0;
+							} else {
+								matrix[r][n] = 2;
+							}
 						}
 					}
-					if (n < col) {
-						for (int z = n; z < col; z++) {
+					if (n < maxCol) {
+						for (int z = n; z < maxCol; z++) {
 							matrix[r][z] = -1;
 						}
 					}
@@ -236,6 +256,46 @@ public class SolarManager {
 		return matrix;
 	}
 
+	private boolean isInverterGridItemDeleted(String inverterId, int r, int c) {
+		boolean isDeleted = false;
+
+		if (mInverterGridMap == null) {
+			mInverterGridMap = new HashMap<String, List<InverterGridItem>>();
+			try {
+				List<InverterGridItem> allDeletedItemList = DbHelp.getDbUtils(
+						mContext).findAll(InverterGridItem.class);
+				for (int i = 0; i < allDeletedItemList.size(); i++) {
+					InverterGridItem item = allDeletedItemList.get(i);
+					if (!mInverterGridMap.containsKey(item.getInverterId())) {
+						List<InverterGridItem> list = new ArrayList<InverterGridItem>();
+						list.add(item);
+						mInverterGridMap.put(item.getInverterId(), list);
+					} else {
+						List<InverterGridItem> list = mInverterGridMap.get(item
+								.getInverterId());
+						list.add(item);
+					}
+				}
+			} catch (DbException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (!mInverterGridMap.containsKey(inverterId)) {
+			isDeleted = false;
+		} else {
+			List<InverterGridItem> list = mInverterGridMap.get(inverterId);
+			for (int i = 0; i < list.size(); i++) {
+				InverterGridItem item = list.get(i);
+				if (item.getRow() == r && item.getCol() == c) {
+					isDeleted = true;
+				}
+			}
+		}
+
+		return isDeleted;
+	}
+
 	private class TissotWorkerHandler extends Handler {
 
 		TissotWorkerHandler(Looper looper) {
@@ -247,9 +307,41 @@ public class SolarManager {
 			super.handleMessage(msg);
 
 			switch (msg.what) {
+			case MSG_STORE_DELETED_GRID_ITEM:
+				_handleStoreInverterGridItem(msg.arg1, msg.arg2);
+				break;
 			default:
 				break;
 			}
+		}
+	}
+
+	private void _handleStoreInverterGridItem(int row, int col) {
+		try {
+			List<Inverter> list = DbHelp.getDbUtils(mContext).findAll(
+					Inverter.class);
+			int r = 0, c = 0;
+			int rowOfInverter = row;
+
+			// Compute the coordinate of the inverter where we touched
+			for (int i = 0; i < list.size(); i++) {
+				Inverter inverter = list.get(i);
+				c = inverter.getmClusterNumber();
+				r += inverter.getmGroupNumber();
+				if (row + 1 <= r) {
+					String inverterId = inverter.getInverterId();
+					InverterGridItem gridItem = new InverterGridItem();
+					gridItem.setInverterId(inverterId);
+					gridItem.setRow(rowOfInverter);
+					gridItem.setCol(col);
+
+					DbHelp.getDbUtils(mContext).save(gridItem);
+				} else {
+					rowOfInverter = row - r;
+				}
+			}
+		} catch (DbException e) {
+			e.printStackTrace();
 		}
 	}
 

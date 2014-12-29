@@ -23,7 +23,7 @@ import com.solaredge.fusion.SvcNames;
 import com.solaredge.server.response.SlrResponse;
 import com.solaredge.utils.DbHelp;
 
-public class ModifyInverterActivity extends BaseActivity {
+public class AddOptimizerActivity extends BaseActivity {
 
 	@ViewInject(R.id.e_inverter_name)
 	private EditText mInverterName;
@@ -43,30 +43,10 @@ public class ModifyInverterActivity extends BaseActivity {
 	private Inverter mInverter = null;
 	private String mStationId;
 
-	private TextWatcher mTextWatcher = new TextWatcher() {
-
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {
-
-		}
-
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
-
-		}
-
-		@Override
-		public void afterTextChanged(Editable s) {
-			mInverter.setInverterName(s.toString());
-		}
-	};
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
-		setContentView(R.layout.activity_modify_inverter);
+		setContentView(R.layout.activity_add_optimizer);
 		super.onCreate(savedInstanceState);
 
 		mXFunc2.setVisibility(View.VISIBLE);
@@ -98,7 +78,6 @@ public class ModifyInverterActivity extends BaseActivity {
 			mDeleteInverterBT.setVisibility(View.GONE);
 		}
 
-		mInverterName.addTextChangedListener(mTextWatcher);
 	}
 
 	@Override

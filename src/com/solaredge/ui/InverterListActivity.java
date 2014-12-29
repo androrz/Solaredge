@@ -39,14 +39,6 @@ public class InverterListActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		mStationId = mIntent.getStringExtra("station_id");
-		mBaseHandler.postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				mSolarManager.getInverterList(mStationId);
-			}
-		}, 100);
-
 		List<Inverter> list = new ArrayList<Inverter>();
 		mAdapter = new InverterListAdapter(this, list);
 		mList.setAdapter(mAdapter);
@@ -80,9 +72,23 @@ public class InverterListActivity extends BaseActivity {
 		super.onClick(v);
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mBaseHandler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				mSolarManager.getInverterList(mStationId);
+			}
+		}, 100);
+	}
+
 	@OnClick(R.id.b_add_inverter)
 	private void onAddInverterClick(View view) {
-		jumpToPage(ModifyInverterActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putString("station_id", mStationId);
+		jumpToPage(ModifyInverterActivity.class, bundle);
 	}
 
 	@Override

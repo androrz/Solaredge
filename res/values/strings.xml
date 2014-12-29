@@ -27,5 +27,7 @@
     <string name="label_inverter_group">Group</string>
     <string name="label_inverter_cluster">Cluster</string>
     <string name="label_inverter_angle">Angle</string>
+    <string name="label_inverter_name2">Inverter</string>
+    <string name="label_inverter_col">Column</string>
 
 </resources>

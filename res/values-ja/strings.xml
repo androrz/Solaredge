@@ -28,5 +28,7 @@
     <string name="label_inverter_group">文字列</string>
     <string name="label_inverter_cluster">ごとに数</string>
     <string name="label_inverter_angle">角度</string>
+    <string name="label_inverter_name2">インバーター</string>
+    <string name="label_inverter_col">コラム</string>
 
 </resources>

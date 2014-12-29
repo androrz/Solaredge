@@ -79,6 +79,7 @@ public class InverterListAdapter extends BaseAdapter {
 					.findViewById(R.id.t_cluster_number);
 			holder.angle = (TextView) convertView.findViewById(R.id.t_angle);
 			holder.modify = (Button) convertView.findViewById(R.id.b_modify);
+			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
@@ -96,6 +97,7 @@ public class InverterListAdapter extends BaseAdapter {
 						ModifyInverterActivity.class);
 				Bundle bundle = new Bundle();
 				bundle.putSerializable("inverter", mItems.get(position));
+				bundle.putString("station_id", mItems.get(position).getmStationId());
 				intent.putExtras(bundle);
 				mContext.startActivity(intent);
 			}

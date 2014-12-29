@@ -46,16 +46,26 @@ public class ModifyLayoutActivity extends BaseActivity implements
 	@Override
 	protected void initWidgetProperty() {
 		super.initWidgetProperty();
+
+		mXFunc2.setVisibility(View.VISIBLE);
+		mXFunc2.setImageResource(R.drawable.drw_add);
+		mBack.setVisibility(View.GONE);
 	}
 
 	@OnClick(R.id.b_ok)
 	private void onOkClick(View view) {
 		finish();
 	}
+	
+	@OnClick(R.id.b_func2)
+	private void onAddClick(View view) {
+		finish();
+	}
 
 	@OnClick(R.id.i_delete_plate)
 	private void onDeletePlateClick(View view) {
 		mGridView.deleteGridItem(mRow, mCol);
+		mSolarManager.storeDeletedGridItem(mRow, mCol);
 	}
 
 	@OnClick(R.id.i_reset)

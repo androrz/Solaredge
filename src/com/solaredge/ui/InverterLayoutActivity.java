@@ -40,9 +40,6 @@ public class InverterLayoutActivity extends BaseActivity {
 	@Override
 	protected void initWidgetProperty() {
 		super.initWidgetProperty();
-
-		mXFunc2.setVisibility(View.VISIBLE);
-		mXFunc2.setImageResource(R.drawable.drw_add);
 	}
 
 	@Override

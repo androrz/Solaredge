@@ -74,6 +74,10 @@
             android:theme="@style/NoTitleBarTheme" >
         </activity>
         <activity
+            android:name=".ui.AddOptimizerActivity"
+            android:theme="@style/NoTitleBarTheme" >
+        </activity>
+        <activity
             android:name=".ui.InverterLayoutActivity"
             android:theme="@style/NoTitleBarTheme" >
         </activity>

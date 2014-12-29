@@ -27,5 +27,7 @@
     <string name="label_inverter_group">组串</string>
     <string name="label_inverter_cluster">每串数</string>
     <string name="label_inverter_angle">角度</string>
+    <string name="label_inverter_name2">逆变器</string>
+    <string name="label_inverter_col">列</string>
 
 </resources>
