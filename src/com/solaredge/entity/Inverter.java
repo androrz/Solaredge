@@ -90,4 +90,9 @@ public class Inverter implements Serializable {
 		this.mStationId = mStationId;
 	}
 
+	@Override
+	public String toString() {
+		return mInverterName;
+	}
+
 }

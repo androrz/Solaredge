@@ -1,5 +1,6 @@
 package com.solaredge.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +26,8 @@ public class ModifyLayoutActivity extends BaseActivity implements
 
 	private int mRow = -1;
 	private int mCol = -1;
+
+	private static final int REQUEST_CODE_ADD = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +55,22 @@ public class ModifyLayoutActivity extends BaseActivity implements
 		mBack.setVisibility(View.GONE);
 	}
 
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.b_func2:
+			jumpToPage(AddOptimizerActivity.class, null, true,
+					REQUEST_CODE_ADD, false);
+			break;
+
+		default:
+			break;
+		}
+		super.onClick(v);
+	}
+
 	@OnClick(R.id.b_ok)
 	private void onOkClick(View view) {
-		finish();
-	}
-	
-	@OnClick(R.id.b_func2)
-	private void onAddClick(View view) {
 		finish();
 	}
 
@@ -78,4 +90,10 @@ public class ModifyLayoutActivity extends BaseActivity implements
 		mRow = row;
 		mCol = col;
 	}
+
+	@Override
+	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
+		super.onActivityResult(arg0, arg1, arg2);
+	}
+
 }

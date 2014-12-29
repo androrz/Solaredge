@@ -10,7 +10,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.SparseIntArray;
 
+import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
 import com.solaredge.SolarApp;
 import com.solaredge.entity.HttpRequestParam;
@@ -37,7 +39,9 @@ public class SolarManager {
 
 	private static final int MSG_STORE_DELETED_GRID_ITEM = 0;
 
-	private HashMap<String, List<InverterGridItem>> mInverterGridMap = null;
+	private HashMap<String, List<InverterGridItem>> mDeletedGridMap = null;
+	private HashMap<String, List<InverterGridItem>> mExtraGridMap = null;
+	private HashMap<String, Integer> mColumnLengthMap = null;
 
 	/**
 	 * Get the singleton TissotManager instance.<br>
@@ -219,7 +223,8 @@ public class SolarManager {
 			int maxRow = 0, maxCol = 0;
 			for (int i = 0; i < list.size(); i++) {
 				Inverter inverter = list.get(i);
-				maxCol = Math.max(maxCol, inverter.getmClusterNumber());
+				maxCol = Math.max(maxCol, inverter.getmClusterNumber()
+						+ getColumnExtraLengthById(inverter.getInverterId()));
 				maxRow += inverter.getmGroupNumber();
 			}
 			matrix = new int[maxRow][maxCol];
@@ -241,6 +246,10 @@ public class SolarManager {
 							}
 						}
 					}
+
+					// add possible extra optimizer
+					// TODO:
+
 					if (n < maxCol) {
 						for (int z = n; z < maxCol; z++) {
 							matrix[r][z] = -1;
@@ -256,22 +265,27 @@ public class SolarManager {
 		return matrix;
 	}
 
-	private boolean isInverterGridItemDeleted(String inverterId, int r, int c) {
-		boolean isDeleted = false;
+	private int getColumnExtraLengthById(String inverterId) {
+		int length = 0;
 
-		if (mInverterGridMap == null) {
-			mInverterGridMap = new HashMap<String, List<InverterGridItem>>();
+		if (mExtraGridMap == null) {
+			mExtraGridMap = new HashMap<String, List<InverterGridItem>>();
 			try {
-				List<InverterGridItem> allDeletedItemList = DbHelp.getDbUtils(
-						mContext).findAll(InverterGridItem.class);
-				for (int i = 0; i < allDeletedItemList.size(); i++) {
-					InverterGridItem item = allDeletedItemList.get(i);
-					if (!mInverterGridMap.containsKey(item.getInverterId())) {
+				List<InverterGridItem> allAddedItemList = DbHelp.getDbUtils(
+						mContext).findAll(
+						Selector.from(InverterGridItem.class).where("mIsNew",
+								"=", "1"));
+				if (allAddedItemList == null || allAddedItemList.size() == 0) {
+					return 0;
+				}
+				for (int i = 0; i < allAddedItemList.size(); i++) {
+					InverterGridItem item = allAddedItemList.get(i);
+					if (!mExtraGridMap.containsKey(item.getInverterId())) {
 						List<InverterGridItem> list = new ArrayList<InverterGridItem>();
 						list.add(item);
-						mInverterGridMap.put(item.getInverterId(), list);
+						mExtraGridMap.put(item.getInverterId(), list);
 					} else {
-						List<InverterGridItem> list = mInverterGridMap.get(item
+						List<InverterGridItem> list = mExtraGridMap.get(item
 								.getInverterId());
 						list.add(item);
 					}
@@ -281,10 +295,66 @@ public class SolarManager {
 			}
 		}
 
-		if (!mInverterGridMap.containsKey(inverterId)) {
+		if (!mExtraGridMap.containsKey(inverterId)) {
+			return 0;
+		} else {
+			List<InverterGridItem> list = mExtraGridMap.get(inverterId);
+			SparseIntArray array = new SparseIntArray();
+			for (int i = 0; i < list.size(); i++) {
+				InverterGridItem item = list.get(i);
+				if (array.indexOfKey(item.getRow()) == -1) {
+					array.put(item.getRow(), 1);
+				} else {
+					int val = array.get(item.getRow());
+					val++;
+					array.put(item.getRow(), val);
+				}
+			}
+			int maxLength = 0;
+			for (int i = 0; i < array.size(); i++) {
+				int val = array.valueAt(i);
+				maxLength = Math.max(maxLength, val);
+			}
+		}
+
+		return length;
+	}
+
+	private boolean isInverterGridItemDeleted(String inverterId, int r, int c) {
+		boolean isDeleted = false;
+
+		if (mDeletedGridMap == null) {
+			mDeletedGridMap = new HashMap<String, List<InverterGridItem>>();
+			try {
+				List<InverterGridItem> allDeletedItemList = DbHelp.getDbUtils(
+						mContext).findAll(
+						Selector.from(InverterGridItem.class).where("mIsNew",
+								"=", "0"));
+				if (allDeletedItemList == null
+						|| allDeletedItemList.size() == 0) {
+					return false;
+				}
+				for (int i = 0; i < allDeletedItemList.size(); i++) {
+					InverterGridItem item = allDeletedItemList.get(i);
+					if (!mDeletedGridMap.containsKey(item.getInverterId())) {
+						List<InverterGridItem> list = new ArrayList<InverterGridItem>();
+						list.add(item);
+						mDeletedGridMap.put(item.getInverterId(), list);
+					} else {
+						List<InverterGridItem> list = mDeletedGridMap.get(item
+								.getInverterId());
+						list.add(item);
+					}
+				}
+			} catch (DbException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (!mDeletedGridMap.containsKey(inverterId)) {
 			isDeleted = false;
 		} else {
-			List<InverterGridItem> list = mInverterGridMap.get(inverterId);
+			List<InverterGridItem> list = mDeletedGridMap.get(inverterId);
 			for (int i = 0; i < list.size(); i++) {
 				InverterGridItem item = list.get(i);
 				if (item.getRow() == r && item.getCol() == c) {

@@ -19,6 +19,13 @@ public class InverterGridItem {
 	@Column(column = "mCol")
 	private int mCol;
 
+	@Column(column = "mAngle")
+	private int mAngle;
+
+	@Column(column = "mIsNew")
+	private boolean mIsNew; // true: added extra optimizer, false: deleted
+							// optimizer
+
 	public String getInverterId() {
 		return mInverterId;
 	}
@@ -41,6 +48,22 @@ public class InverterGridItem {
 
 	public void setCol(int mCol) {
 		this.mCol = mCol;
+	}
+
+	public int getmAngle() {
+		return mAngle;
+	}
+
+	public void setmAngle(int mAngle) {
+		this.mAngle = mAngle;
+	}
+
+	public boolean ismIsNew() {
+		return mIsNew;
+	}
+
+	public void setmIsNew(boolean mIsNew) {
+		this.mIsNew = mIsNew;
 	}
 
 }
