@@ -195,6 +195,8 @@ public class PanZoomGridView extends PanZoomView {
 		mRow = row;
 		mCol = col;
 		invalidate();
+		
+		mListener.onGridClick(row, col);
 	}
 
 	/**

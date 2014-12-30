@@ -3,6 +3,7 @@ package com.solaredge.entity;
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Table;
+import com.lidroid.xutils.db.annotation.Transient;
 
 @Table(name = "table_inverter_grid_item")
 public class InverterGridItem {
@@ -25,6 +26,9 @@ public class InverterGridItem {
 	@Column(column = "mIsNew")
 	private boolean mIsNew; // true: added extra optimizer, false: deleted
 							// optimizer
+
+	@Transient
+	private String mInverterName;
 
 	public String getInverterId() {
 		return mInverterId;
@@ -64,6 +68,21 @@ public class InverterGridItem {
 
 	public void setmIsNew(boolean mIsNew) {
 		this.mIsNew = mIsNew;
+	}
+
+	public String getmInverterName() {
+		return mInverterName;
+	}
+
+	public void setmInverterName(String mInverterName) {
+		this.mInverterName = mInverterName;
+	}
+
+	@Override
+	public String toString() {
+		return "InverterGridItem [mId=" + mId + ", mInverterId=" + mInverterId
+				+ ", mRow=" + mRow + ", mCol=" + mCol + ", mAngle=" + mAngle
+				+ ", mIsNew=" + mIsNew + "]";
 	}
 
 }

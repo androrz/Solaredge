@@ -26,6 +26,7 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
@@ -43,8 +44,10 @@ import com.google.zxing.qrcode.QRCodeReader;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
+import com.solaredge.entity.InverterGridItem;
 import com.solaredge.ui.BaseActivity;
 import com.solaredge.view.PanZoomGridView;
+import com.solaredge.view.PanZoomGridView.OnGridClickListener;
 import com.solaredge.zxing.camera.CameraManager;
 import com.solaredge.zxing.decoding.CaptureActivityHandler;
 import com.solaredge.zxing.decoding.InactivityTimer;
@@ -52,22 +55,27 @@ import com.solaredge.zxing.decoding.RGBLuminanceSource;
 import com.solaredge.zxing.decoding.Utils;
 import com.solaredge.zxing.view.ViewfinderView;
 
-public class CaptureActivity extends BaseActivity implements Callback {
+public class CaptureActivity extends BaseActivity implements Callback,
+		OnGridClickListener {
 
-	private static final int REQUEST_CODE = 234;
 	private CaptureActivityHandler handler;
 	private ViewfinderView viewfinderView;
 
-	private boolean hasSurface;
-	private Vector<BarcodeFormat> decodeFormats;
-	private String characterSet;
+	private boolean mHasSurface;
+	private Vector<BarcodeFormat> mDecodeFormats;
+	private String mCharacterSet;
 	private InactivityTimer inactivityTimer;
-	private MediaPlayer mediaPlayer;
-	private boolean playBeep;
+	private MediaPlayer mPlayer;
+	private boolean mPlayBeep;
 	private static final float BEEP_VOLUME = 0.10f;
-	private boolean vibrate;
-	private String photo_path;
-	private Bitmap scanBitmap;
+	private boolean mVibrate;
+	private String mPicPath;
+	private Bitmap mScanBitmap;
+
+	@ViewInject(R.id.t_scan_label)
+	private TextView mInverterGridTV;
+
+	private static final int REQUEST_CODE = 234;
 
 	@ViewInject(R.id.p_grid_view)
 	private PanZoomGridView mGridView;
@@ -90,17 +98,15 @@ public class CaptureActivity extends BaseActivity implements Callback {
 	private int mMaxCol;
 	private boolean mIsHorizontal = true;
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_capture);
 		super.onCreate(savedInstanceState);
 
-		// 初始化 CameraManager
 		CameraManager.init(getApplication());
 		viewfinderView = (ViewfinderView) findViewById(R.id.v_view_finder);
 
-		hasSurface = false;
+		mHasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
 
 		int[][] matrix = mSolarManager.getInverterMatrix();
@@ -108,6 +114,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 		mMaxCol = matrix[0].length;
 		mGridView.setGridArray(matrix);
 		mGridView.setSelectable(true);
+		mGridView.addClickListener(this);
 		mGridView.setSelectedGrid(mRow, mCol);
 	}
 
@@ -192,38 +199,27 @@ public class CaptureActivity extends BaseActivity implements Callback {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == RESULT_OK) {
-
 			switch (requestCode) {
-
 			case REQUEST_CODE:
-
 				String[] proj = { MediaStore.Images.Media.DATA };
 				// 获取选中图片的路径
 				Cursor cursor = getContentResolver().query(data.getData(),
 						proj, null, null, null);
-
 				if (cursor.moveToFirst()) {
-
 					int column_index = cursor
 							.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-					photo_path = cursor.getString(column_index);
-					if (photo_path == null) {
-						photo_path = Utils.getPath(getApplicationContext(),
+					mPicPath = cursor.getString(column_index);
+					if (mPicPath == null) {
+						mPicPath = Utils.getPath(getApplicationContext(),
 								data.getData());
-						Log.i("123path  Utils", photo_path);
 					}
-					Log.i("123path", photo_path);
 
 				}
-
 				cursor.close();
-
 				new Thread(new Runnable() {
-
 					@Override
 					public void run() {
-
-						Result result = scanningImage(photo_path);
+						Result result = scanningImage(mPicPath);
 						if (result == null) {
 							Log.i("123", "   -----------");
 							Looper.prepare();
@@ -243,24 +239,20 @@ public class CaptureActivity extends BaseActivity implements Callback {
 				break;
 
 			}
-
 		}
-
 	}
 
 	// TODO: 解析部分图片
 	protected Result scanningImage(String path) {
 		if (TextUtils.isEmpty(path)) {
-
 			return null;
-
 		}
 		// DecodeHintType 和EncodeHintType
 		Hashtable<DecodeHintType, String> hints = new Hashtable<DecodeHintType, String>();
 		hints.put(DecodeHintType.CHARACTER_SET, "utf-8"); // 设置二维码内容的编码
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true; // 先获取原大小
-		scanBitmap = BitmapFactory.decodeFile(path, options);
+		mScanBitmap = BitmapFactory.decodeFile(path, options);
 		options.inJustDecodeBounds = false; // 获取新的大小
 
 		int sampleSize = (int) (options.outHeight / (float) 200);
@@ -268,14 +260,13 @@ public class CaptureActivity extends BaseActivity implements Callback {
 		if (sampleSize <= 0)
 			sampleSize = 1;
 		options.inSampleSize = sampleSize;
-		scanBitmap = BitmapFactory.decodeFile(path, options);
+		mScanBitmap = BitmapFactory.decodeFile(path, options);
 
 		// --------------测试的解析方法---PlanarYUVLuminanceSource-这几行代码对project没作功----------
-
 		LuminanceSource source1 = new PlanarYUVLuminanceSource(
-				rgb2YUV(scanBitmap), scanBitmap.getWidth(),
-				scanBitmap.getHeight(), 0, 0, scanBitmap.getWidth(),
-				scanBitmap.getHeight(), false);
+				rgb2YUV(mScanBitmap), mScanBitmap.getWidth(),
+				mScanBitmap.getHeight(), 0, 0, mScanBitmap.getWidth(),
+				mScanBitmap.getHeight(), false);
 		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
 				source1));
 		MultiFormatReader reader1 = new MultiFormatReader();
@@ -287,9 +278,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 			e1.printStackTrace();
 		}
 
-		// ----------------------------
-
-		RGBLuminanceSource source = new RGBLuminanceSource(scanBitmap);
+		RGBLuminanceSource source = new RGBLuminanceSource(mScanBitmap);
 		BinaryBitmap bitmap1 = new BinaryBitmap(new HybridBinarizer(source));
 		QRCodeReader reader = new QRCodeReader();
 		try {
@@ -310,22 +299,22 @@ public class CaptureActivity extends BaseActivity implements Callback {
 		super.onResume();
 		SurfaceView surfaceView = (SurfaceView) findViewById(R.id.s_preview_view);
 		SurfaceHolder surfaceHolder = surfaceView.getHolder();
-		if (hasSurface) {
+		if (mHasSurface) {
 			initCamera(surfaceHolder);
 		} else {
 			surfaceHolder.addCallback(this);
 			surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		}
-		decodeFormats = null;
-		characterSet = null;
+		mDecodeFormats = null;
+		mCharacterSet = null;
 
-		playBeep = true;
+		mPlayBeep = true;
 		AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
 		if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
-			playBeep = false;
+			mPlayBeep = false;
 		}
 		initBeepSound();
-		vibrate = true;
+		mVibrate = true;
 	}
 
 	@Override
@@ -353,8 +342,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
 			return;
 		}
 		if (handler == null) {
-			handler = new CaptureActivityHandler(this, decodeFormats,
-					characterSet);
+			handler = new CaptureActivityHandler(this, mDecodeFormats,
+					mCharacterSet);
 		}
 	}
 
@@ -366,17 +355,15 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		if (!hasSurface) {
-			hasSurface = true;
+		if (!mHasSurface) {
+			mHasSurface = true;
 			initCamera(holder);
 		}
-
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		hasSurface = false;
-
+		mHasSurface = false;
 	}
 
 	public ViewfinderView getViewfinderView() {
@@ -404,24 +391,24 @@ public class CaptureActivity extends BaseActivity implements Callback {
 	}
 
 	private void initBeepSound() {
-		if (playBeep && mediaPlayer == null) {
+		if (mPlayBeep && mPlayer == null) {
 			// The volume on STREAM_SYSTEM is not adjustable, and users found it
 			// too loud, so we now play on the music stream.
 			setVolumeControlStream(AudioManager.STREAM_MUSIC);
-			mediaPlayer = new MediaPlayer();
-			mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			mediaPlayer.setOnCompletionListener(beepListener);
+			mPlayer = new MediaPlayer();
+			mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			mPlayer.setOnCompletionListener(beepListener);
 
 			AssetFileDescriptor file = getResources().openRawResourceFd(
 					R.raw.mo_scanner_beep);
 			try {
-				mediaPlayer.setDataSource(file.getFileDescriptor(),
+				mPlayer.setDataSource(file.getFileDescriptor(),
 						file.getStartOffset(), file.getLength());
 				file.close();
-				mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
-				mediaPlayer.prepare();
+				mPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
+				mPlayer.prepare();
 			} catch (IOException e) {
-				mediaPlayer = null;
+				mPlayer = null;
 			}
 		}
 	}
@@ -429,10 +416,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
 	private static final long VIBRATE_DURATION = 200L;
 
 	private void playBeepSoundAndVibrate() {
-		if (playBeep && mediaPlayer != null) {
-			mediaPlayer.start();
+		if (mPlayBeep && mPlayer != null) {
+			mPlayer.start();
 		}
-		if (vibrate) {
+		if (mVibrate) {
 			Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 			vibrator.vibrate(VIBRATE_DURATION);
 		}
@@ -493,5 +480,16 @@ public class CaptureActivity extends BaseActivity implements Callback {
 			}
 		}
 		return yuv;
+	}
+
+	@Override
+	public void onGridClick(int row, int col) {
+		mRow = row;
+		mCol = col;
+
+		InverterGridItem grid = mSolarManager.getInverterGridByCoordinate(row,
+				col);
+		mInverterGridTV.setText(getString(R.string.scan_inverter_label,
+				grid.getmInverterName(), grid.getRow() + 1, grid.getCol() + 1));
 	}
 }

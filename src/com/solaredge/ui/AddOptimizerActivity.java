@@ -41,24 +41,26 @@ public class AddOptimizerActivity extends BaseActivity {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.b_func2:
-			try {
-				mGridItem.setInverterId(mInverterList.get(
-						getWheel(R.id.w_inverter_name).getCurrentItem())
-						.getInverterId());
-				mGridItem
-						.setRow(getWheel(R.id.w_group_number).getCurrentItem());
-				mGridItem.setCol(getWheel(R.id.w_cluster_number)
-						.getCurrentItem());
-				mGridItem
-						.setmAngle(getWheel(R.id.w_angle).getCurrentItem() == 0 ? 0
-								: 90);
-				mGridItem.setmIsNew(true);
-				DbHelp.getDbUtils(this).save(mGridItem);
-			} catch (DbException e) {
-				e.printStackTrace();
-			}
-			setResult(RESULT_OK);
-			finish();
+			mGridItem.setInverterId(mInverterList.get(
+					getWheel(R.id.w_inverter_name).getCurrentItem())
+					.getInverterId());
+			mGridItem.setRow(getWheel(R.id.w_group_number).getCurrentItem());
+			mGridItem.setCol(getWheel(R.id.w_cluster_number).getCurrentItem());
+			mGridItem
+					.setmAngle(getWheel(R.id.w_angle).getCurrentItem() == 0 ? 0
+							: 90);
+			mGridItem.setmIsNew(true);
+			mSolarManager.storeAddedGridItem(mGridItem);
+			showProgressDialog();
+			mBaseHandler.postDelayed(new Runnable() {
+
+				@Override
+				public void run() {
+					dismissProgressBar();
+					setResult(RESULT_OK);
+					finish();
+				}
+			}, 500);
 			break;
 
 		default:

@@ -15,7 +15,7 @@
     <string name="app_in_process">处理中...</string>
     <string name="app_crash">程序意外终止</string>
     <string name="label_code_tips">将条形码、二维码放入框内，即可自动扫描</string>
-    <string name="scan_inverter_label">扫描：%1$s</string>
+    <string name="scan_inverter_label">扫描：%1$s-%2$s-%3$s</string>
     <string name="label_select_language">选择语言</string>
     <string name="label_lan_chinese">中文</string>
     <string name="label_lan_english">English</string>

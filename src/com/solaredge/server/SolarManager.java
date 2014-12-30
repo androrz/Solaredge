@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.SparseIntArray;
 
 import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.exception.DbException;
 import com.solaredge.SolarApp;
 import com.solaredge.entity.HttpRequestParam;
@@ -254,7 +255,7 @@ public class SolarManager {
 						}
 					}
 
-					// add possible extra optimizer
+					// add extra optimizer
 					List<InverterGridItem> extraItems = getRowExtraOptimizer(
 							inverter.getInverterId(), m);
 					if (extraItems != null && extraItems.size() > 0) {
@@ -430,6 +431,43 @@ public class SolarManager {
 		}
 	}
 
+	public InverterGridItem getInverterGridByCoordinate(int row, int col) {
+		InverterGridItem grid = null;
+
+		try {
+			List<Inverter> list = DbHelp.getDbUtils(mContext).findAll(
+					Inverter.class);
+			int r = 0, c = 0;
+			int rowOfInverter = row;
+
+			// Compute the coordinate of the inverter where we touched
+			for (int i = 0; i < list.size(); i++) {
+				Inverter inv = list.get(i);
+				c = inv.getmClusterNumber();
+				r += inv.getmGroupNumber();
+				if (row + 1 <= r) {
+					grid = new InverterGridItem();
+					grid.setInverterId(inv.getInverterId());
+					grid.setmInverterName(inv.getInverterName());
+					grid.setRow(rowOfInverter);
+					grid.setCol(col);
+					grid.setmIsNew(false);
+					break;
+				} else {
+					rowOfInverter = row - r;
+				}
+			}
+
+			// Regenerate deleted grid map
+			mDeletedGridMap = null;
+			isInverterGridItemDeleted("0", 0, 0);
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+
+		return grid;
+	}
+
 	private void _handleStoreInverterGridItem(int row, int col) {
 		try {
 			List<Inverter> list = DbHelp.getDbUtils(mContext).findAll(
@@ -448,13 +486,31 @@ public class SolarManager {
 					gridItem.setInverterId(inverterId);
 					gridItem.setRow(rowOfInverter);
 					gridItem.setCol(col);
+					gridItem.setmIsNew(false);
 
-					DbHelp.getDbUtils(mContext).save(gridItem);
+					if (col >= c) { // This is an extra optimizer
+						DbHelp.getDbUtils(mContext).delete(
+								InverterGridItem.class,
+								WhereBuilder.b("mInverterId", "=", inverterId)
+										.and("mRow", "=", rowOfInverter)
+										.and("mCol", "=", col));
+
+						// Regenerate extra grid map
+						mExtraGridMap = null;
+						getColumnExtraLengthById("0");
+					} else {
+						DbHelp.getDbUtils(mContext).save(gridItem);
+
+						// Regenerate deleted grid map
+						mDeletedGridMap = null;
+						isInverterGridItemDeleted("0", 0, 0);
+					}
 				} else {
 					rowOfInverter = row - r;
 				}
 			}
 
+			// Regenerate deleted grid map
 			mDeletedGridMap = null;
 			isInverterGridItemDeleted("0", 0, 0);
 		} catch (DbException e) {
@@ -464,7 +520,19 @@ public class SolarManager {
 
 	private void _handleStoreAddedGridItem(InverterGridItem item) {
 		try {
+			Inverter inverter = DbHelp.getDbUtils(mContext).findById(
+					Inverter.class, item.getInverterId());
+			int extraColumnOfRow = 0;
+			List<InverterGridItem> list = getRowExtraOptimizer(
+					item.getInverterId(), item.getRow());
+			if (list != null) {
+				extraColumnOfRow = list.size();
+			}
+			item.setCol(inverter.getmClusterNumber() + extraColumnOfRow);
+
 			DbHelp.getDbUtils(mContext).save(item);
+
+			// Regenerate extra grid map
 			mExtraGridMap = null;
 			getColumnExtraLengthById("0");
 		} catch (DbException e) {
