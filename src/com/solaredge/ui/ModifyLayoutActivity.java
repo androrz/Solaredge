@@ -34,6 +34,11 @@ public class ModifyLayoutActivity extends BaseActivity implements
 
 		setContentView(R.layout.activity_modify_layout);
 		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 
 		int[][] matrix = mSolarManager.getInverterMatrix();
 		mGridView.setGridArray(matrix);

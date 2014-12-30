@@ -42,6 +42,16 @@ public class AddOptimizerActivity extends BaseActivity {
 		switch (v.getId()) {
 		case R.id.b_func2:
 			try {
+				mGridItem.setInverterId(mInverterList.get(
+						getWheel(R.id.w_inverter_name).getCurrentItem())
+						.getInverterId());
+				mGridItem
+						.setRow(getWheel(R.id.w_group_number).getCurrentItem());
+				mGridItem.setCol(getWheel(R.id.w_cluster_number)
+						.getCurrentItem());
+				mGridItem
+						.setmAngle(getWheel(R.id.w_angle).getCurrentItem() == 0 ? 0
+								: 90);
 				mGridItem.setmIsNew(true);
 				DbHelp.getDbUtils(this).save(mGridItem);
 			} catch (DbException e) {
@@ -71,17 +81,17 @@ public class AddOptimizerActivity extends BaseActivity {
 	// Wheel changed listener
 	private OnWheelChangedListener changedListener = new OnWheelChangedListener() {
 		public void onChanged(WheelView wheel, int oldValue, int newValue) {
-			if (wheel.getId() == R.id.w_group_number) {
-				mGridItem.setRow(newValue);
-			} else if (wheel.getId() == R.id.w_cluster_number) {
-				mGridItem.setCol(newValue);
-			} else if (wheel.getId() == R.id.w_angle) {
-				int val = newValue == 0 ? 0 : 90;
-				mGridItem.setmAngle(val);
-			} else if (wheel.getId() == R.id.w_inverter_name) {
-				mGridItem.setInverterId(mInverterList.get(newValue)
-						.getInverterId());
-			}
+			// if (wheel.getId() == R.id.w_group_number) {
+			// mGridItem.setRow(newValue);
+			// } else if (wheel.getId() == R.id.w_cluster_number) {
+			// mGridItem.setCol(newValue);
+			// } else if (wheel.getId() == R.id.w_angle) {
+			// int val = newValue == 0 ? 0 : 90;
+			// mGridItem.setmAngle(val);
+			// } else if (wheel.getId() == R.id.w_inverter_name) {
+			// mGridItem.setInverterId(mInverterList.get(newValue)
+			// .getInverterId());
+			// }
 		}
 	};
 

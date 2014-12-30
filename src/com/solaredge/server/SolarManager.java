@@ -32,16 +32,15 @@ public class SolarManager {
 	private HashMap<SolarListener, ListenerTransport> mListeners = new HashMap<SolarListener, ListenerTransport>();
 
 	private static Context mContext;
-
 	private static SolarManager sInstance;
 
 	private final static String TAG = "Solar-SolarManager";
 
 	private static final int MSG_STORE_DELETED_GRID_ITEM = 0;
+	private static final int MSG_STORE_ADDED_GRID_ITEM = 1;
 
 	private HashMap<String, List<InverterGridItem>> mDeletedGridMap = null;
 	private HashMap<String, List<InverterGridItem>> mExtraGridMap = null;
-	private HashMap<String, Integer> mColumnLengthMap = null;
 
 	/**
 	 * Get the singleton TissotManager instance.<br>
@@ -215,6 +214,13 @@ public class SolarManager {
 		mSolarHandler.sendMessage(message);
 	}
 
+	public void storeAddedGridItem(InverterGridItem item) {
+		Message message = Message.obtain();
+		message.what = MSG_STORE_ADDED_GRID_ITEM;
+		message.obj = item;
+		mSolarHandler.sendMessage(message);
+	}
+
 	public int[][] getInverterMatrix() {
 		int[][] matrix = null;
 		try {
@@ -227,6 +233,7 @@ public class SolarManager {
 						+ getColumnExtraLengthById(inverter.getInverterId()));
 				maxRow += inverter.getmGroupNumber();
 			}
+			LogX.trace(TAG, "maxRow: " + maxRow + ", maxCol: " + maxCol);
 			matrix = new int[maxRow][maxCol];
 			int r = 0; // Total row index
 			for (int i = 0; i < list.size(); i++) {
@@ -248,7 +255,18 @@ public class SolarManager {
 					}
 
 					// add possible extra optimizer
-					// TODO:
+					List<InverterGridItem> extraItems = getRowExtraOptimizer(
+							inverter.getInverterId(), m);
+					if (extraItems != null && extraItems.size() > 0) {
+						for (int j = 0; j < extraItems.size(); j++, n++) {
+							InverterGridItem item = extraItems.get(j);
+							if (item.getmAngle() == 0) {
+								matrix[r][n] = 0;
+							} else {
+								matrix[r][n] = 2;
+							}
+						}
+					}
 
 					if (n < maxCol) {
 						for (int z = n; z < maxCol; z++) {
@@ -296,7 +314,7 @@ public class SolarManager {
 		}
 
 		if (!mExtraGridMap.containsKey(inverterId)) {
-			return 0;
+			length = 0;
 		} else {
 			List<InverterGridItem> list = mExtraGridMap.get(inverterId);
 			SparseIntArray array = new SparseIntArray();
@@ -315,9 +333,31 @@ public class SolarManager {
 				int val = array.valueAt(i);
 				maxLength = Math.max(maxLength, val);
 			}
+			length = maxLength;
 		}
 
 		return length;
+	}
+
+	private List<InverterGridItem> getRowExtraOptimizer(String inverterId,
+			int row) {
+		List<InverterGridItem> list = new ArrayList<InverterGridItem>();
+
+		if (mExtraGridMap == null || mExtraGridMap.size() == 0
+				|| !mExtraGridMap.containsKey(inverterId)) {
+			return null;
+		} else {
+			List<InverterGridItem> inverterAllList = mExtraGridMap
+					.get(inverterId);
+			for (int i = 0; i < inverterAllList.size(); i++) {
+				InverterGridItem item = inverterAllList.get(i);
+				if (item.getRow() == row) {
+					list.add(item);
+				}
+			}
+		}
+
+		return list;
 	}
 
 	private boolean isInverterGridItemDeleted(String inverterId, int r, int c) {
@@ -380,6 +420,10 @@ public class SolarManager {
 			case MSG_STORE_DELETED_GRID_ITEM:
 				_handleStoreInverterGridItem(msg.arg1, msg.arg2);
 				break;
+			case MSG_STORE_ADDED_GRID_ITEM:
+				if (msg.obj != null && msg.obj instanceof InverterGridItem) {
+					_handleStoreAddedGridItem((InverterGridItem) msg.obj);
+				}
 			default:
 				break;
 			}
@@ -410,6 +454,19 @@ public class SolarManager {
 					rowOfInverter = row - r;
 				}
 			}
+
+			mDeletedGridMap = null;
+			isInverterGridItemDeleted("0", 0, 0);
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void _handleStoreAddedGridItem(InverterGridItem item) {
+		try {
+			DbHelp.getDbUtils(mContext).save(item);
+			mExtraGridMap = null;
+			getColumnExtraLengthById("0");
 		} catch (DbException e) {
 			e.printStackTrace();
 		}
