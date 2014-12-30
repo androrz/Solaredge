@@ -28,6 +28,15 @@ public class InverterGridItem {
 							// optimizer
 
 	@Transient
+	private int mUniversalRow;
+
+	@Transient
+	private int mUniversalCol;
+
+	@Transient
+	private String mMacId;
+
+	@Transient
 	private String mInverterName;
 
 	public String getInverterId() {
@@ -54,35 +63,78 @@ public class InverterGridItem {
 		this.mCol = mCol;
 	}
 
-	public int getmAngle() {
+	public int getAngle() {
 		return mAngle;
 	}
 
-	public void setmAngle(int mAngle) {
+	public void setAngle(int mAngle) {
 		this.mAngle = mAngle;
 	}
 
-	public boolean ismIsNew() {
+	public boolean isIsNew() {
 		return mIsNew;
 	}
 
-	public void setmIsNew(boolean mIsNew) {
+	public void setIsNew(boolean mIsNew) {
 		this.mIsNew = mIsNew;
 	}
 
-	public String getmInverterName() {
+	public String getInverterName() {
 		return mInverterName;
 	}
 
-	public void setmInverterName(String mInverterName) {
+	public void setInverterName(String mInverterName) {
 		this.mInverterName = mInverterName;
+	}
+
+	public int getUniversalRow() {
+		return mUniversalRow;
+	}
+
+	public void setUniversalRow(int mUniversalRow) {
+		this.mUniversalRow = mUniversalRow;
+	}
+
+	public int getUniversalCol() {
+		return mUniversalCol;
+	}
+
+	public void setUniversalCol(int mUniversalCol) {
+		this.mUniversalCol = mUniversalCol;
+	}
+
+	public String getMacId() {
+		return mMacId;
+	}
+
+	public void setMacId(String mMacId) {
+		this.mMacId = mMacId;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof InverterGridItem) {
+			InverterGridItem grid = (InverterGridItem) object;
+			if (mInverterId.equals(grid.getInverterId())
+					&& mUniversalRow == grid.getUniversalRow()
+					&& mUniversalCol == grid.getUniversalCol()) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+
 	}
 
 	@Override
 	public String toString() {
-		return "InverterGridItem [mId=" + mId + ", mInverterId=" + mInverterId
-				+ ", mRow=" + mRow + ", mCol=" + mCol + ", mAngle=" + mAngle
-				+ ", mIsNew=" + mIsNew + "]";
+		return "<scouter><inverterid>" + mInverterId + "</inverterid><group>"
+				+ (mRow + 1) + "</group><locationid>" + (mCol + 1)
+				+ "</locationid><macid>" + mMacId + "</macid><tilt>" + mAngle
+				+ "</tilt><xaxis>" + (mUniversalCol + 1) + "</xaxis><yaxis>"
+				+ (mUniversalRow + 1) + "</yaxis></scouter>";
 	}
 
 }

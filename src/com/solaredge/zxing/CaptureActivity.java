@@ -3,63 +3,51 @@ package com.solaredge.zxing;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
-import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Vibrator;
-import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.DecodeHintType;
-import com.google.zxing.FormatException;
-import com.google.zxing.LuminanceSource;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
-import com.google.zxing.common.HybridBinarizer;
-import com.google.zxing.qrcode.QRCodeReader;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
 import com.solaredge.entity.InverterGridItem;
+import com.solaredge.entity.JsonResponse;
+import com.solaredge.fusion.FusionCode;
+import com.solaredge.fusion.SvcNames;
+import com.solaredge.server.response.SlrResponse;
 import com.solaredge.ui.BaseActivity;
+import com.solaredge.utils.DbHelp;
+import com.solaredge.utils.LogX;
 import com.solaredge.view.PanZoomGridView;
 import com.solaredge.view.PanZoomGridView.OnGridClickListener;
 import com.solaredge.zxing.camera.CameraManager;
 import com.solaredge.zxing.decoding.CaptureActivityHandler;
 import com.solaredge.zxing.decoding.InactivityTimer;
-import com.solaredge.zxing.decoding.RGBLuminanceSource;
-import com.solaredge.zxing.decoding.Utils;
 import com.solaredge.zxing.view.ViewfinderView;
 
 public class CaptureActivity extends BaseActivity implements Callback,
 		OnGridClickListener {
 
-	private CaptureActivityHandler handler;
-	private ViewfinderView viewfinderView;
+	private CaptureActivityHandler mHandler;
+	private ViewfinderView mViewfinderView;
 
 	private boolean mHasSurface;
 	private Vector<BarcodeFormat> mDecodeFormats;
@@ -69,13 +57,9 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	private boolean mPlayBeep;
 	private static final float BEEP_VOLUME = 0.10f;
 	private boolean mVibrate;
-	private String mPicPath;
-	private Bitmap mScanBitmap;
 
 	@ViewInject(R.id.t_scan_label)
 	private TextView mInverterGridTV;
-
-	private static final int REQUEST_CODE = 234;
 
 	@ViewInject(R.id.p_grid_view)
 	private PanZoomGridView mGridView;
@@ -98,13 +82,20 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	private int mMaxCol;
 	private boolean mIsHorizontal = true;
 
+	private InverterGridItem mCurrentGrid;
+	private List<InverterGridItem> mGridsToSubmit;
+	private String mStationId;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_capture);
 		super.onCreate(savedInstanceState);
 
+		Bundle bundle = mIntent.getExtras();
+		mStationId = bundle.getString("station_id");
+
 		CameraManager.init(getApplication());
-		viewfinderView = (ViewfinderView) findViewById(R.id.v_view_finder);
+		mViewfinderView = (ViewfinderView) findViewById(R.id.v_view_finder);
 
 		mHasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
@@ -167,7 +158,23 @@ public class CaptureActivity extends BaseActivity implements Callback,
 
 	@OnClick(R.id.i_commit)
 	private void onCommitClick(View view) {
+		LogX.trace(TAG, mGridsToSubmit.toString());
+		mSolarManager.setOptimizer(mStationId, getScouterString());
+	}
 
+	private String getScouterString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("<scouters>");
+		if (mGridsToSubmit == null || mGridsToSubmit.size() == 0) {
+			return FusionCode.ETY_STR;
+		} else {
+			for (int i = 0; i < mGridsToSubmit.size(); i++) {
+				builder.append(mGridsToSubmit.get(i).toString());
+			}
+		}
+		builder.append("</scouters>");
+
+		return builder.toString();
 	}
 
 	@Override
@@ -191,107 +198,6 @@ public class CaptureActivity extends BaseActivity implements Callback,
 			flag = true;
 			CameraManager.get().offLight();
 		}
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (resultCode == RESULT_OK) {
-			switch (requestCode) {
-			case REQUEST_CODE:
-				String[] proj = { MediaStore.Images.Media.DATA };
-				// 获取选中图片的路径
-				Cursor cursor = getContentResolver().query(data.getData(),
-						proj, null, null, null);
-				if (cursor.moveToFirst()) {
-					int column_index = cursor
-							.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-					mPicPath = cursor.getString(column_index);
-					if (mPicPath == null) {
-						mPicPath = Utils.getPath(getApplicationContext(),
-								data.getData());
-					}
-
-				}
-				cursor.close();
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						Result result = scanningImage(mPicPath);
-						if (result == null) {
-							Log.i("123", "   -----------");
-							Looper.prepare();
-							Toast.makeText(getApplicationContext(), "图片格式有误", 0)
-									.show();
-							Looper.loop();
-						} else {
-							Log.i("123result", result.toString());
-							String recode = recode(result.toString());
-							Intent data = new Intent();
-							data.putExtra("result", recode);
-							setResult(300, data);
-							finish();
-						}
-					}
-				}).start();
-				break;
-
-			}
-		}
-	}
-
-	// TODO: 解析部分图片
-	protected Result scanningImage(String path) {
-		if (TextUtils.isEmpty(path)) {
-			return null;
-		}
-		// DecodeHintType 和EncodeHintType
-		Hashtable<DecodeHintType, String> hints = new Hashtable<DecodeHintType, String>();
-		hints.put(DecodeHintType.CHARACTER_SET, "utf-8"); // 设置二维码内容的编码
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inJustDecodeBounds = true; // 先获取原大小
-		mScanBitmap = BitmapFactory.decodeFile(path, options);
-		options.inJustDecodeBounds = false; // 获取新的大小
-
-		int sampleSize = (int) (options.outHeight / (float) 200);
-
-		if (sampleSize <= 0)
-			sampleSize = 1;
-		options.inSampleSize = sampleSize;
-		mScanBitmap = BitmapFactory.decodeFile(path, options);
-
-		// --------------测试的解析方法---PlanarYUVLuminanceSource-这几行代码对project没作功----------
-		LuminanceSource source1 = new PlanarYUVLuminanceSource(
-				rgb2YUV(mScanBitmap), mScanBitmap.getWidth(),
-				mScanBitmap.getHeight(), 0, 0, mScanBitmap.getWidth(),
-				mScanBitmap.getHeight(), false);
-		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
-				source1));
-		MultiFormatReader reader1 = new MultiFormatReader();
-		Result result1;
-		try {
-			result1 = reader1.decode(binaryBitmap);
-			String content = result1.getText();
-		} catch (NotFoundException e1) {
-			e1.printStackTrace();
-		}
-
-		RGBLuminanceSource source = new RGBLuminanceSource(mScanBitmap);
-		BinaryBitmap bitmap1 = new BinaryBitmap(new HybridBinarizer(source));
-		QRCodeReader reader = new QRCodeReader();
-		try {
-			return reader.decode(bitmap1, hints);
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		} catch (ChecksumException e) {
-			e.printStackTrace();
-		} catch (FormatException e) {
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 
 	@Override
@@ -320,9 +226,9 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (handler != null) {
-			handler.quitSynchronously();
-			handler = null;
+		if (mHandler != null) {
+			mHandler.quitSynchronously();
+			mHandler = null;
 		}
 		CameraManager.get().closeDriver();
 	}
@@ -341,8 +247,8 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		} catch (RuntimeException e) {
 			return;
 		}
-		if (handler == null) {
-			handler = new CaptureActivityHandler(this, mDecodeFormats,
+		if (mHandler == null) {
+			mHandler = new CaptureActivityHandler(this, mDecodeFormats,
 					mCharacterSet);
 		}
 	}
@@ -367,11 +273,11 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	}
 
 	public ViewfinderView getViewfinderView() {
-		return viewfinderView;
+		return mViewfinderView;
 	}
 
 	public Handler getHandler() {
-		return handler;
+		return mHandler;
 	}
 
 	public void drawViewfinder() {
@@ -382,12 +288,25 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		inactivityTimer.onActivity();
 		playBeepSoundAndVibrate();
 		String recode = recode(result.toString());
+		if (mCurrentGrid != null) {
+			mCurrentGrid.setMacId(recode);
+		}
 
-		// 数据返回
-		Intent data = new Intent();
-		data.putExtra("result", recode);
-		setResult(300, data);
-		finish();
+		if (mGridsToSubmit == null) {
+			mGridsToSubmit = new ArrayList<InverterGridItem>();
+		} else if (mGridsToSubmit.contains(mCurrentGrid)) {
+			mGridsToSubmit.remove(mCurrentGrid);
+		}
+
+		mGridsToSubmit.add(mCurrentGrid);
+
+		mBaseHandler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				continuePreview();
+			}
+		}, 2000);
 	}
 
 	private void initBeepSound() {
@@ -451,45 +370,41 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		return formart;
 	}
 
-	public byte[] rgb2YUV(Bitmap bitmap) {
-		int width = bitmap.getWidth();
-		int height = bitmap.getHeight();
-		int[] pixels = new int[width * height];
-		bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-
-		int len = width * height;
-		byte[] yuv = new byte[len * 3 / 2];
-		int y, u, v;
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				int rgb = pixels[i * width + j] & 0x00FFFFFF;
-
-				int r = rgb & 0xFF;
-				int g = (rgb >> 8) & 0xFF;
-				int b = (rgb >> 16) & 0xFF;
-
-				y = ((66 * r + 129 * g + 25 * b + 128) >> 8) + 16;
-				u = ((-38 * r - 74 * g + 112 * b + 128) >> 8) + 128;
-				v = ((112 * r - 94 * g - 18 * b + 128) >> 8) + 128;
-
-				y = y < 16 ? 16 : (y > 255 ? 255 : y);
-				u = u < 0 ? 0 : (u > 255 ? 255 : u);
-				v = v < 0 ? 0 : (v > 255 ? 255 : v);
-
-				yuv[i * width + j] = (byte) y;
-			}
-		}
-		return yuv;
-	}
-
 	@Override
 	public void onGridClick(int row, int col) {
 		mRow = row;
 		mCol = col;
 
-		InverterGridItem grid = mSolarManager.getInverterGridByCoordinate(row,
-				col);
+		mCurrentGrid = mSolarManager.getInverterGridByCoordinate(row, col);
 		mInverterGridTV.setText(getString(R.string.scan_inverter_label,
-				grid.getmInverterName(), grid.getRow() + 1, grid.getCol() + 1));
+				mCurrentGrid.getInverterName(), mCurrentGrid.getRow() + 1,
+				mCurrentGrid.getCol() + 1));
 	}
+
+	public void continuePreview() {
+		if (mHandler != null) {
+			mHandler.restartPreviewAndDecode();
+		}
+	}
+
+	@Override
+	public void handleEvent(int resultCode, SlrResponse response) {
+		if (!analyzeAsyncResultCode(resultCode, response)) {
+			return;
+		}
+
+		int action = response.getResponseEvent();
+		JsonResponse jr = response.getResponseContent();
+		switch (action) {
+		case SvcNames.WSN_SET_OPTIMIZER:
+			if (jr.getBodyField("is_success").equals("1")) {
+				finish();
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
 }

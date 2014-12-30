@@ -63,7 +63,9 @@ public class InverterListActivity extends BaseActivity {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.b_func2:
-			jumpToPage(InverterLayoutActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putString("station_id", mStationId);
+			jumpToPage(InverterLayoutActivity.class, bundle);
 			break;
 
 		default:

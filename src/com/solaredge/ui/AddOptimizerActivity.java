@@ -47,9 +47,9 @@ public class AddOptimizerActivity extends BaseActivity {
 			mGridItem.setRow(getWheel(R.id.w_group_number).getCurrentItem());
 			mGridItem.setCol(getWheel(R.id.w_cluster_number).getCurrentItem());
 			mGridItem
-					.setmAngle(getWheel(R.id.w_angle).getCurrentItem() == 0 ? 0
+					.setAngle(getWheel(R.id.w_angle).getCurrentItem() == 0 ? 0
 							: 90);
-			mGridItem.setmIsNew(true);
+			mGridItem.setIsNew(true);
 			mSolarManager.storeAddedGridItem(mGridItem);
 			showProgressDialog();
 			mBaseHandler.postDelayed(new Runnable() {

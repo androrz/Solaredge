@@ -18,7 +18,7 @@ public class SvcNames {
 		mInterfaceTypeMapping.put(WSN_GET_INVERTERS, "getinverters");
 		mInterfaceTypeMapping.put(WSN_CREATE_INVERTERS, "createinverter");
 		mInterfaceTypeMapping.put(WSN_DELETE_INVERTER, "deleteinverter");
-		mInterfaceTypeMapping.put(WSN_SET_OPTIMIZER, "Createscouter2");
+		mInterfaceTypeMapping.put(WSN_SET_OPTIMIZER, "createscouter2");
 	}
 
 	public static String getServiceHandler(int action) {

@@ -200,7 +200,7 @@ public class SolarManager {
 	}
 
 	public void setOptimizer(String stationId, String scouter) {
-		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_CREATE_INVERTERS);
+		HttpRequestParam p = new HttpRequestParam(SvcNames.WSN_SET_OPTIMIZER);
 		p.addParam("req_stationid", stationId);
 		p.addParam("req_scouter", scouter);
 
@@ -261,7 +261,7 @@ public class SolarManager {
 					if (extraItems != null && extraItems.size() > 0) {
 						for (int j = 0; j < extraItems.size(); j++, n++) {
 							InverterGridItem item = extraItems.get(j);
-							if (item.getmAngle() == 0) {
+							if (item.getAngle() == 0) {
 								matrix[r][n] = 0;
 							} else {
 								matrix[r][n] = 2;
@@ -448,10 +448,12 @@ public class SolarManager {
 				if (row + 1 <= r) {
 					grid = new InverterGridItem();
 					grid.setInverterId(inv.getInverterId());
-					grid.setmInverterName(inv.getInverterName());
+					grid.setInverterName(inv.getInverterName());
 					grid.setRow(rowOfInverter);
 					grid.setCol(col);
-					grid.setmIsNew(false);
+					grid.setUniversalRow(row);
+					grid.setUniversalCol(col);
+					grid.setIsNew(false);
 					break;
 				} else {
 					rowOfInverter = row - r;
@@ -486,7 +488,7 @@ public class SolarManager {
 					gridItem.setInverterId(inverterId);
 					gridItem.setRow(rowOfInverter);
 					gridItem.setCol(col);
-					gridItem.setmIsNew(false);
+					gridItem.setIsNew(false);
 
 					if (col >= c) { // This is an extra optimizer
 						DbHelp.getDbUtils(mContext).delete(

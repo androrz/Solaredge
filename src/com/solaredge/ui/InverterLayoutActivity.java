@@ -21,12 +21,17 @@ public class InverterLayoutActivity extends BaseActivity {
 
 	@ViewInject(R.id.p_grid_view)
 	private PanZoomGridView mGridView;
+	
+	private String mStationId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
 		setContentView(R.layout.activity_inverter_layout);
 		super.onCreate(savedInstanceState);
+		
+		Bundle bundle = mIntent.getExtras();
+		mStationId = bundle.getString("station_id");
 	}
 
 	@Override
@@ -71,7 +76,9 @@ public class InverterLayoutActivity extends BaseActivity {
 
 	@OnClick(R.id.i_scan)
 	private void onScanClick(View view) {
-		jumpToPage(CaptureActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putString("station_id", mStationId);
+		jumpToPage(CaptureActivity.class, bundle);
 	}
 
 }
