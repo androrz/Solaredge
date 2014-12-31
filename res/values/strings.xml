@@ -29,5 +29,6 @@
     <string name="label_inverter_angle">Angle</string>
     <string name="label_inverter_name2">Inverter</string>
     <string name="label_inverter_col">Column</string>
+    <string name="scan_mac_id">( %1$s )</string>
 
 </resources>

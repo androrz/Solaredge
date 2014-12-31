@@ -250,7 +250,7 @@ public class SolarManager {
 							if (inverter.getmAngle() == 0) {
 								matrix[r][n] = 0;
 							} else {
-								matrix[r][n] = 2;
+								matrix[r][n] = 3;
 							}
 						}
 					}
@@ -264,7 +264,7 @@ public class SolarManager {
 							if (item.getAngle() == 0) {
 								matrix[r][n] = 0;
 							} else {
-								matrix[r][n] = 2;
+								matrix[r][n] = 3;
 							}
 						}
 					}

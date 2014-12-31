@@ -26,4 +26,20 @@ public class SolarDefaultPreference extends BasePreference {
 		putStringKey(AppConfig.PreferenceSolar.SOLAR_SYSTEM_LANGUAGE, language);
 	}
 
+	public String getUserName() {
+		return getStringKey(AppConfig.PreferenceSolar.SOLAR_USER_NAME);
+	}
+
+	public void setUserName(String language) {
+		putStringKey(AppConfig.PreferenceSolar.SOLAR_USER_NAME, language);
+	}
+
+	public String getUserPassword() {
+		return getStringKey(AppConfig.PreferenceSolar.SOLAR_USER_PASSWORD);
+	}
+
+	public void setUserPassword(String language) {
+		putStringKey(AppConfig.PreferenceSolar.SOLAR_USER_PASSWORD, language);
+	}
+
 }

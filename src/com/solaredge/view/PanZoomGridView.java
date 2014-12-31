@@ -31,7 +31,7 @@ public class PanZoomGridView extends PanZoomView {
 	static public final int CanvasSizeMultiplier = 3;
 	static public final int NumSquaresAlongCanvas = CanvasSizeMultiplier
 			* NumIconHorizontal;
-	static public final int IconTypes = 4;
+	static public final int IconTypes = 6;
 	static public final int HORIZONTAL_GAP = 8;
 	static public final int VERTICAL_GAP = 5;
 
@@ -47,8 +47,9 @@ public class PanZoomGridView extends PanZoomView {
 
 	private Random mRandomObject = new Random(System.currentTimeMillis());
 	private final int[] mImageIds = { R.drawable.icon_plate,
-			R.drawable.icon_plate_selected, R.drawable.icon_plate_h,
-			R.drawable.icon_plate_selected_h };
+			R.drawable.icon_plate_selected, R.drawable.icon_plate_scaned,
+			R.drawable.icon_plate_h, R.drawable.icon_plate_selected_h,
+			R.drawable.icon_plate_scaned_h, };
 	private Bitmap[] mBitmaps = null;
 	private int[][] mGrid = null;
 
@@ -112,7 +113,12 @@ public class PanZoomGridView extends PanZoomView {
 					continue;
 				}
 				if (i == mRow && j == mCol && mGridSelectable) {
-					bitmapIndex += 1;
+					if (bitmapIndex == 0 || bitmapIndex == 3) {
+						bitmapIndex += 1;
+					} else if (bitmapIndex == 2 || bitmapIndex == 5) {
+						bitmapIndex -= 1;
+					}
+
 				}
 				b1 = bitmaps[bitmapIndex];
 				dx = j * (mIconWidth + HORIZONTAL_GAP);
@@ -195,8 +201,15 @@ public class PanZoomGridView extends PanZoomView {
 		mRow = row;
 		mCol = col;
 		invalidate();
-		
+
 		mListener.onGridClick(row, col);
+	}
+
+	public void setGridScaned(int row, int col) {
+		if (mGrid[row][col] == 0 || mGrid[row][col] == 3) {
+			mGrid[row][col] = mGrid[row][col] + 2;
+		}
+		invalidate();
 	}
 
 	/**

@@ -18,23 +18,40 @@
         android:id="@+id/i_title_bar"
         layout="@layout/title_bar_without_logo" />
 
-    <TextView
-        android:id="@+id/t_scan_label"
+    <LinearLayout
+        android:id="@+id/l_label"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/i_title_bar"
         android:background="@color/common_gray"
-        android:gravity="center_vertical"
-        android:paddingLeft="10dp"
-        android:text="@string/scan_inverter_label"
-        android:textColor="@color/black"
-        android:textSize="14sp" />
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/t_scan_label"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:text="@string/scan_inverter_label"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/t_scan_mac"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/i_view_finder_area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/t_scan_label"
+        android:layout_below="@+id/l_label"
         android:background="@drawable/view_finder_bg" />
 
     <RelativeLayout

@@ -17,7 +17,6 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="40dp"
         android:background="@drawable/bg_edit"
-        android:text="test"
         android:hint="用户名" />
 
     <EditText
@@ -29,7 +28,6 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/bg_edit"
         android:hint="密码"
-        android:text="123456"
         android:inputType="textPassword" />
 
     <Button

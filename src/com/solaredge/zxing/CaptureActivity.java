@@ -61,6 +61,9 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	@ViewInject(R.id.t_scan_label)
 	private TextView mInverterGridTV;
 
+	@ViewInject(R.id.t_scan_mac)
+	private TextView mOptimizerMacGridTV;
+
 	@ViewInject(R.id.p_grid_view)
 	private PanZoomGridView mGridView;
 
@@ -288,8 +291,14 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		inactivityTimer.onActivity();
 		playBeepSoundAndVibrate();
 		String recode = recode(result.toString());
+		recode = recode.substring(recode.length() - 8, recode.length());
 		if (mCurrentGrid != null) {
 			mCurrentGrid.setMacId(recode);
+			mOptimizerMacGridTV
+					.setText(getString(R.string.scan_mac_id, recode));
+			mGridView.setGridScaned(mCurrentGrid.getUniversalRow(),
+					mCurrentGrid.getUniversalCol());
+			mOptimizerMacGridTV.setVisibility(View.VISIBLE);
 		}
 
 		if (mGridsToSubmit == null) {
@@ -379,6 +388,26 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		mInverterGridTV.setText(getString(R.string.scan_inverter_label,
 				mCurrentGrid.getInverterName(), mCurrentGrid.getRow() + 1,
 				mCurrentGrid.getCol() + 1));
+
+		if (mGridsToSubmit == null || mGridsToSubmit.size() == 0) {
+			mOptimizerMacGridTV.setVisibility(View.GONE);
+			return;
+		}
+
+		boolean contains = false;
+		for (int i = 0; i < mGridsToSubmit.size(); i++) {
+			InverterGridItem item = mGridsToSubmit.get(i);
+			if (item.getUniversalRow() == row && item.getUniversalCol() == col) {
+				mOptimizerMacGridTV.setText(getString(R.string.scan_mac_id,
+						item.getMacId()));
+				contains = true;
+			}
+		}
+		if (!contains) {
+			mOptimizerMacGridTV.setVisibility(View.GONE);
+		} else {
+			mOptimizerMacGridTV.setVisibility(View.VISIBLE);
+		}
 	}
 
 	public void continuePreview() {

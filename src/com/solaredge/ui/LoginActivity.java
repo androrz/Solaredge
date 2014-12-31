@@ -9,6 +9,7 @@ import android.widget.EditText;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
+import com.solaredge.config.PreferenceFactory;
 import com.solaredge.entity.JsonResponse;
 import com.solaredge.fusion.FusionField;
 import com.solaredge.fusion.SvcNames;
@@ -32,6 +33,11 @@ public class LoginActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_login);
 		super.onCreate(savedInstanceState);
+
+		mUserNameET.setText(PreferenceFactory.getDefaultPreference()
+				.getUserName());
+		mUserPasswordET.setText(PreferenceFactory.getDefaultPreference()
+				.getUserPassword());
 	}
 
 	@Override
@@ -81,7 +87,10 @@ public class LoginActivity extends BaseActivity {
 
 		if (jr.getBodyField("is_success").equals("1")) {
 			FusionField.solarUser.setMemberID(jr.getBodyField("session"));
-			jumpToPage(MainActivity.class, true);
+			PreferenceFactory.getDefaultPreference().setUserName(mUserName);
+			PreferenceFactory.getDefaultPreference().setUserPassword(
+					mUserPassword);
+			jumpToPage(MainActivity.class, false);
 		}
 
 	}
