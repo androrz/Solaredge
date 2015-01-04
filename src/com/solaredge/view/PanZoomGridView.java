@@ -60,6 +60,8 @@ public class PanZoomGridView extends PanZoomView {
 	private OnGridClickListener mListener;
 	private boolean mGridSelectable = false;
 
+	private static final String TAG = "Solar-PanZoomGridView";
+
 	/**
 	 * Constructors for the view.
 	 */
@@ -291,13 +293,14 @@ public class PanZoomGridView extends PanZoomView {
 			int col = (x - xOffset + scaleOffsetX)
 					/ (int) ((mIconHeight + HORIZONTAL_GAP) * mScaleFactor);
 
-			Log.d("Alading", "row: " + row + " col: " + col);
+			Log.d(TAG, "row: " + row + " col: " + col);
 			if (row < mGrid.length && row >= 0 && col < mGrid[0].length
 					&& col >= 0) {
 
 				if (mGrid[row][col] >= 0) {
 					mRow = row;
 					mCol = col;
+					invalidate();
 				}
 
 				if (mListener != null) {
