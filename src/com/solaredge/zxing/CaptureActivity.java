@@ -112,53 +112,16 @@ public class CaptureActivity extends BaseActivity implements Callback,
 
 	@OnClick(R.id.i_left)
 	private void onMoveLeftClick(View view) {
-		if (mIsHorizontal) {
-			mCol--;
-			if (mCol < 0) {
-				mCol = 0;
-			}
-		} else {
-			mRow--;
-			if (mRow < 0) {
-				mRow = 0;
-			}
-		}
+		int tmpRow = mRow;
+		int tmpCol = mCol;
+		boolean found = false;
+		int i = mRow;
+		int j = mCol;
 
-		mGridView.setSelectedGrid(mRow, mCol);
-	}
-
-	@OnClick(R.id.i_right)
-	private void onMoveRightClick(View view) {
 		if (mIsHorizontal) {
-			mCol++;
-			int i = mCol;
-			int j = mCol;
-			for (; i < mMaxCol; i++) {
-				if (mGridView.getGridValue(mRow, i) == -1) {
-					continue;
-				} else {
-					mCol = i;
-					break;
-				}
-			}
-			if (i > mMaxCol - 1) {
-				if (mRow < mMaxRow - 1) {
-					mCol = 0;
-					mRow++;
-				} else {
-					mCol = --j;
-				}
-			}
-		} else {
-			mRow++;
-			boolean found = false;
-			int i = mRow;
-			int j = mCol;
-			int tmpRow = mRow;
-			int tmpCol = mCol;
-			
-			for (j = mCol; j < mMaxCol; j++) {
-				for (i = mRow; i < mMaxRow; i++) {
+			j--;
+			for (; i >= 0; i--) {
+				for (; j >= 0; j--) {
 					if (mGridView.getGridValue(i, j) != -1) {
 						found = true;
 						break;
@@ -167,15 +130,77 @@ public class CaptureActivity extends BaseActivity implements Callback,
 				if (found) {
 					break;
 				}
+				j = mMaxCol;
 			}
-			mRow = i;
-			mCol = j;
-			if (mRow >= mMaxRow || mCol >= mMaxCol) {
-				mRow = tmpRow - 1;
-				mCol = tmpCol;
+		} else {
+			i--;
+			for (; j >= 0; j--) {
+				for (; i >= 0; i--) {
+					if (mGridView.getGridValue(i, j) != -1) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					break;
+				}
+				i = mMaxRow;
 			}
 		}
 
+		mRow = i;
+		mCol = j;
+		if (mRow >= mMaxRow || mCol >= mMaxCol) {
+			mRow = tmpRow;
+			mCol = tmpCol;
+		}
+		mGridView.setSelectedGrid(mRow, mCol);
+	}
+
+	@OnClick(R.id.i_right)
+	private void onMoveRightClick(View view) {
+		int tmpRow = mRow;
+		int tmpCol = mCol;
+		boolean found = false;
+		int i = mRow;
+		int j = mCol;
+
+		if (mIsHorizontal) {
+			j++;
+			for (; i < mMaxRow; i++) {
+				for (; j < mMaxCol; j++) {
+					if (mGridView.getGridValue(i, j) != -1) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					break;
+				}
+				j = 0;
+			}
+		} else {
+			i++;
+			for (; j < mMaxCol; j++) {
+				for (; i < mMaxRow; i++) {
+					if (mGridView.getGridValue(i, j) != -1) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
+					break;
+				}
+				i = 0;
+			}
+		}
+
+		mRow = i;
+		mCol = j;
+		if (mRow >= mMaxRow || mCol >= mMaxCol) {
+			mRow = tmpRow;
+			mCol = tmpCol;
+		}
 		mGridView.setSelectedGrid(mRow, mCol);
 	}
 
