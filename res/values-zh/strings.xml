@@ -22,7 +22,7 @@
     <string name="label_lan_japnese">日本語</string>
     <string name="label_station_list">电站列表</string>
     <string name="label_config_inverter">配置逆变器</string>
-    <string name="tip_modify_inverter_layout">点击选中后隐藏/显示组件</string>
+    <string name="tip_modify_inverter_layout">点击选中后点删除按钮可删除组件</string>
     <string name="label_inverter_name">名称</string>
     <string name="label_inverter_group">组串</string>
     <string name="label_inverter_cluster">每串数</string>

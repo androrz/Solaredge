@@ -236,6 +236,12 @@ public class SolarManager {
 			}
 			LogX.trace(TAG, "maxRow: " + maxRow + ", maxCol: " + maxCol);
 			matrix = new int[maxRow][maxCol];
+			for (int i = 0; i < matrix.length; i++) {
+				for (int j = 0; j < matrix[0].length; j++) {
+					matrix[i][j] = -1;
+				}
+			}
+
 			int r = 0; // Total row index
 			for (int i = 0; i < list.size(); i++) {
 				Inverter inverter = list.get(i);

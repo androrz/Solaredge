@@ -5,12 +5,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
-import com.solaredge.entity.InverterGridItem;
 import com.solaredge.view.PanZoomGridView;
 import com.solaredge.view.PanZoomGridView.OnGridClickListener;
 

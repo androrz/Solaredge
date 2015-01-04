@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
-import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
@@ -34,7 +33,6 @@ import com.solaredge.fusion.FusionCode;
 import com.solaredge.fusion.SvcNames;
 import com.solaredge.server.response.SlrResponse;
 import com.solaredge.ui.BaseActivity;
-import com.solaredge.utils.DbHelp;
 import com.solaredge.utils.LogX;
 import com.solaredge.view.PanZoomGridView;
 import com.solaredge.view.PanZoomGridView.OnGridClickListener;
@@ -133,13 +131,52 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	private void onMoveRightClick(View view) {
 		if (mIsHorizontal) {
 			mCol++;
-			if (mCol > mMaxCol - 1) {
-				mCol = mMaxCol - 1;
+			int i = mCol;
+			int j = mCol;
+			for (; i < mMaxCol; i++) {
+				if (mGridView.getGridValue(mRow, i) == -1) {
+					continue;
+				} else {
+					mCol = i;
+					break;
+				}
+			}
+			if (i > mMaxCol - 1) {
+				if (mRow < mMaxRow - 1) {
+					mCol = 0;
+					mRow++;
+				} else {
+					mCol = --j;
+				}
 			}
 		} else {
 			mRow++;
-			if (mRow > mMaxRow - 1) {
-				mRow = mMaxRow - 1;
+			for (int i = mRow; i < mMaxRow; i++) {
+				if (mGridView.getGridValue(i, mCol) == -1) {
+					mRow++;
+					if (mRow > mMaxRow - 1) {
+						mRow = 0;
+						mCol++;
+					}
+				} else {
+					mRow = i;
+					break;
+				}
+			}
+
+			mRow++;
+			for (int j = mCol; j < mMaxCol; j++) {
+				for (int i = mRow; i < mMaxRow; i++) {
+					if (mGridView.getGridValue(i, mCol) == -1) {
+						mRow++;
+						if (mRow > mMaxCol - 1) {
+							mRow = 0;
+							mCol++;
+						}
+					} else {
+						
+					}
+				}
 			}
 		}
 

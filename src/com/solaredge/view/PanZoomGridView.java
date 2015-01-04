@@ -184,6 +184,15 @@ public class PanZoomGridView extends PanZoomView {
 		return mGrid;
 	}
 
+	public int getGridValue(int row, int col) {
+		if (row < 0 || row > NumIconVertical - 1 || col < 0
+				|| col > NumIconHorizontal - 1) {
+			return -1;
+		} else {
+			return mGrid[row][col];
+		}
+	}
+
 	public void setGridArray(int[][] matrix) {
 		mGrid = matrix;
 		NumIconHorizontal = mGrid[0].length;
