@@ -151,32 +151,28 @@ public class CaptureActivity extends BaseActivity implements Callback,
 			}
 		} else {
 			mRow++;
-			for (int i = mRow; i < mMaxRow; i++) {
-				if (mGridView.getGridValue(i, mCol) == -1) {
-					mRow++;
-					if (mRow > mMaxRow - 1) {
-						mRow = 0;
-						mCol++;
+			boolean found = false;
+			int i = mRow;
+			int j = mCol;
+			int tmpRow = mRow;
+			int tmpCol = mCol;
+			
+			for (j = mCol; j < mMaxCol; j++) {
+				for (i = mRow; i < mMaxRow; i++) {
+					if (mGridView.getGridValue(i, j) != -1) {
+						found = true;
+						break;
 					}
-				} else {
-					mRow = i;
+				}
+				if (found) {
 					break;
 				}
 			}
-
-			mRow++;
-			for (int j = mCol; j < mMaxCol; j++) {
-				for (int i = mRow; i < mMaxRow; i++) {
-					if (mGridView.getGridValue(i, mCol) == -1) {
-						mRow++;
-						if (mRow > mMaxCol - 1) {
-							mRow = 0;
-							mCol++;
-						}
-					} else {
-						
-					}
-				}
+			mRow = i;
+			mCol = j;
+			if (mRow >= mMaxRow || mCol >= mMaxCol) {
+				mRow = tmpRow - 1;
+				mCol = tmpCol;
 			}
 		}
 
