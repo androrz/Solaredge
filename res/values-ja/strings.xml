@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">集能易</string>
+    <string name="app_name">GneSiteMapper</string>
 
     <!-- 应用通用字符串 -->
-    <string name="app_prompt">プロンプト</string>
-    <string name="app_confirm">確認する</string>
-    <string name="app_ok">決定する</string>
-    <string name="app_cancel">キャンセル</string>
-    <string name="app_modify">修正する</string>
+    <string name="app_prompt">プロン</string>
+    <string name="app_confirm">確認す</string>
+    <string name="app_ok">決定す</string>
+    <string name="app_cancel">キャン</string>
+    <string name="app_modify">修正す</string>
     <string name="app_add">加える</string>
     <string name="app_complete">実施する</string>
     <string name="app_delete">削除</string>

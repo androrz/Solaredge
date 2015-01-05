@@ -105,7 +105,7 @@ public class AddOptimizerActivity extends BaseActivity {
 	 */
 	private void initWheel(int id) {
 		WheelView wheel = getWheel(id);
-		wheel.setViewAdapter(new NumericWheelAdapter(this, 1, 30));
+		wheel.setViewAdapter(new NumericWheelAdapter(this, 1, 100));
 		wheel.setCurrentItem(0);
 
 		wheel.addChangingListener(changedListener);

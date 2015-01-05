@@ -349,7 +349,10 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		inactivityTimer.onActivity();
 		playBeepSoundAndVibrate();
 		String recode = recode(result.toString());
-		recode = recode.substring(recode.length() - 8, recode.length());
+		if (recode.length() > 8) {
+			recode = recode.substring(recode.length() - 8, recode.length());
+		}
+
 		if (mCurrentGrid != null) {
 			mCurrentGrid.setMacId(recode);
 			mOptimizerMacGridTV
