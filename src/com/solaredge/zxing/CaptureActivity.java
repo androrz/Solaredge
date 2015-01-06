@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -86,6 +89,7 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	private InverterGridItem mCurrentGrid;
 	private List<InverterGridItem> mGridsToSubmit;
 	private String mStationId;
+	boolean replace = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -351,6 +355,70 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		String recode = recode(result.toString());
 		if (recode.length() > 8) {
 			recode = recode.substring(recode.length() - 8, recode.length());
+		}
+
+		if (mGridsToSubmit != null && mGridsToSubmit.size() > 0) {
+			for (InverterGridItem item : mGridsToSubmit) {
+				if (!item.equals(mCurrentGrid)
+						&& item.getMacId().equals(recode)) {
+					AlertDialog dialog = new AlertDialog.Builder(this)
+							.setTitle(R.string.app_prompt)
+							.setMessage(R.string.duplicate_mac)
+							.setPositiveButton(R.string.app_ok,
+									new OnClickListener() {
+
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											dialog.dismiss();
+										}
+									}).create();
+					dialog.show();
+					mBaseHandler.postDelayed(new Runnable() {
+
+						@Override
+						public void run() {
+							continuePreview();
+						}
+					}, 2000);
+					return;
+				} else if (item.equals(mCurrentGrid)) {
+					AlertDialog dialog = new AlertDialog.Builder(this)
+							.setTitle(R.string.app_prompt)
+							.setMessage(R.string.confirm_replace)
+							.setPositiveButton(R.string.app_ok,
+									new OnClickListener() {
+
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											replace = true;
+											dialog.dismiss();
+										}
+									})
+							.setNegativeButton(R.string.app_cancel,
+									new OnClickListener() {
+
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											replace = false;
+											dialog.dismiss();
+										}
+									}).create();
+					dialog.show();
+					if (!replace) {
+						mBaseHandler.postDelayed(new Runnable() {
+
+							@Override
+							public void run() {
+								continuePreview();
+							}
+						}, 2000);
+						return;
+					}
+				}
+			}
 		}
 
 		if (mCurrentGrid != null) {

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.solaredge.R;
+import com.solaredge.utils.LogX;
 
 /**
  * This view displays a grid of rectangles that can be zoomed in and out. The
@@ -120,10 +121,9 @@ public class PanZoomGridView extends PanZoomView {
 					} else if (bitmapIndex == 2 || bitmapIndex == 5) {
 						bitmapIndex -= 1;
 					}
-
 				}
 				b1 = bitmaps[bitmapIndex];
-				dx = j * (mIconWidth + HORIZONTAL_GAP);
+				dx = j * (mIconWidth + Math.max(1, (100 - NumIconHorizontal) / 100 * HORIZONTAL_GAP));
 				dy = i * (mIconHeight + VERTICAL_GAP);
 				int dxi = (int) Math.round(dx);
 				int dyi = (int) Math.round(dy);
@@ -247,10 +247,15 @@ public class PanZoomGridView extends PanZoomView {
 		mOriginOffsetY = ((float) (CanvasSizeMultiplier - 1) * viewH) / 2;
 
 		// Set width and height to be used for the icon.
-		mIconWidth = (float) (viewW - (NumIconHorizontal - 1) * HORIZONTAL_GAP)
+		mIconWidth = (float) (viewW - (NumIconHorizontal - 1)
+				* Math.max(1, (100 - NumIconHorizontal) / 100 * HORIZONTAL_GAP))
 				/ (float) NumIconHorizontal;
 		// mIconHeight = (float) viewH / (float) NumIconVertical;
 		mIconHeight = (float) mIconWidth * mRawIconHeight / mRawIconWidth;
+
+		mMaxScaleFactor = 2 * mRawIconWidth / mIconWidth;
+		LogX.trace(TAG, "mIconWidth: " + mIconWidth);
+		LogX.trace(TAG, "mMaxScaleFactor: " + mMaxScaleFactor);
 
 		// The canvas is translated by the amount we have scrolled and the
 		// standard amount to move the origin of the canvas up and left so the
@@ -300,7 +305,7 @@ public class PanZoomGridView extends PanZoomView {
 			int row = (y - yOffset + scaleOffsetY)
 					/ (int) ((mIconWidth + VERTICAL_GAP) * mScaleFactor);
 			int col = (x - xOffset + scaleOffsetX)
-					/ (int) ((mIconHeight + HORIZONTAL_GAP) * mScaleFactor);
+					/ (int) ((mIconHeight + Math.max(1, (100 - NumIconHorizontal) / 100 * HORIZONTAL_GAP)) * mScaleFactor);
 
 			Log.d(TAG, "row: " + row + " col: " + col);
 			if (row < mGrid.length && row >= 0 && col < mGrid[0].length

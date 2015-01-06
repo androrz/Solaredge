@@ -1,10 +1,15 @@
 package com.solaredge.ui;
 
+import java.util.List;
+
 import kankan.wheel.widget.OnWheelChangedListener;
 import kankan.wheel.widget.OnWheelScrollListener;
 import kankan.wheel.widget.WheelView;
 import kankan.wheel.widget.adapters.ArrayWheelAdapter;
 import kankan.wheel.widget.adapters.NumericWheelAdapter;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -105,6 +111,30 @@ public class ModifyInverterActivity extends BaseActivity {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.b_func2:
+			try {
+				List<Inverter> list = DbHelp.getDbUtils(this).findAll(
+						Selector.from(Inverter.class).where("inverter_name",
+								"=", mInverter.getInverterName()));
+				if (list != null && list.size() > 0) {
+					AlertDialog dialog = new AlertDialog.Builder(this)
+							.setTitle(R.string.app_prompt)
+							.setMessage(R.string.duplicate_inverter)
+							.setPositiveButton(R.string.app_ok,
+									new OnClickListener() {
+
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											dialog.dismiss();
+										}
+									}).create();
+					dialog.show();
+					break;
+				}
+			} catch (DbException e) {
+				e.printStackTrace();
+			}
+
 			mSolarManager.modifyInverter(mStationId, mInverter.getInverterId(),
 					mInverter.getInverterName(), mInverter.getmGroupNumber(),
 					mInverter.getmClusterNumber(), mInverter.getmAngle());

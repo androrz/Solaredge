@@ -49,6 +49,7 @@ public class PanZoomView extends View {
 
 	protected ScaleGestureDetector mScaleDetector;
 	protected float mScaleFactor = 1.f;
+	protected float mMaxScaleFactor = 2.0f;
 
 	// The next three are set by calling supportsPan, supportsZoom, ...
 	protected boolean mSupportsPan = true;
@@ -352,7 +353,7 @@ public class PanZoomView extends View {
 			mScaleFactor *= detector.getScaleFactor();
 
 			// Don't let the object get too small or too large.
-			mScaleFactor = Math.max(0.5f, Math.min(mScaleFactor, 2.0f));
+			mScaleFactor = Math.max(0.5f, Math.min(mScaleFactor, mMaxScaleFactor));
 			mFocusX = detector.getFocusX();
 			mFocusY = detector.getFocusY();
 

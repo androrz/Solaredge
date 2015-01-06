@@ -86,6 +86,7 @@ public class ModifyLayoutActivity extends BaseActivity implements
 	private void onDeletePlateClick(View view) {
 		AlertDialog dialog = new AlertDialog.Builder(this)
 				.setTitle(R.string.app_prompt)
+				.setMessage(R.string.confirm_delete)
 				.setPositiveButton(R.string.app_ok, new OnClickListener() {
 
 					public void onClick(DialogInterface dialog, int which) {
@@ -94,7 +95,7 @@ public class ModifyLayoutActivity extends BaseActivity implements
 						dialog.dismiss();
 					}
 				})
-				.setPositiveButton(R.string.app_cancel, new OnClickListener() {
+				.setNegativeButton(R.string.app_cancel, new OnClickListener() {
 
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();

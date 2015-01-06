@@ -29,5 +29,10 @@
     <string name="label_inverter_angle">角度</string>
     <string name="label_inverter_name2">逆变器</string>
     <string name="label_inverter_col">列</string>
+    
+    <string name="confirm_delete">是否删除该组件？</string>
+    <string name="confirm_replace">是否替换原来的扫描结果？</string>
+    <string name="duplicate_inverter">已存在相同名称的逆变器！</string>
+    <string name="duplicate_mac">请不要扫描相同的条码！</string>
 
 </resources>
