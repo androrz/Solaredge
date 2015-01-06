@@ -1,5 +1,8 @@
 package com.solaredge.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -81,8 +84,23 @@ public class ModifyLayoutActivity extends BaseActivity implements
 
 	@OnClick(R.id.i_delete_plate)
 	private void onDeletePlateClick(View view) {
-		mGridView.deleteGridItem(mRow, mCol);
-		mSolarManager.storeDeletedGridItem(mRow, mCol);
+		AlertDialog dialog = new AlertDialog.Builder(this)
+				.setTitle(R.string.app_prompt)
+				.setPositiveButton(R.string.app_ok, new OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						mGridView.deleteGridItem(mRow, mCol);
+						mSolarManager.storeDeletedGridItem(mRow, mCol);
+						dialog.dismiss();
+					}
+				})
+				.setPositiveButton(R.string.app_cancel, new OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				}).create();
+		dialog.show();
 	}
 
 	@OnClick(R.id.i_reset)
