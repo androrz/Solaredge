@@ -1,6 +1,7 @@
 package com.solaredge.zxing;
 
 import java.io.IOException;
+import java.io.SerializablePermission;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import com.solaredge.fusion.SvcNames;
 import com.solaredge.server.response.SlrResponse;
 import com.solaredge.ui.BaseActivity;
 import com.solaredge.utils.LogX;
+import com.solaredge.utils.SerializeUtil;
 import com.solaredge.view.PanZoomGridView;
 import com.solaredge.view.PanZoomGridView.OnGridClickListener;
 import com.solaredge.zxing.camera.CameraManager;
@@ -91,6 +93,7 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	private String mStationId;
 	boolean replace = false;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_capture);
@@ -112,6 +115,16 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		mGridView.setSelectable(true);
 		mGridView.addClickListener(this);
 		mGridView.setSelectedGrid(mRow, mCol);
+
+		mGridsToSubmit = (List<InverterGridItem>) SerializeUtil
+				.deserializeObject("scaned_list");
+		if (mGridsToSubmit != null) {
+			for (int i = 0; i < mGridsToSubmit.size(); i++) {
+				mGridView.setGridScaned(
+						mGridsToSubmit.get(i).getUniversalRow(), mGridsToSubmit
+								.get(i).getUniversalCol());
+			}
+		}
 	}
 
 	@OnClick(R.id.i_left)
@@ -223,8 +236,45 @@ public class CaptureActivity extends BaseActivity implements Callback,
 
 	@OnClick(R.id.i_commit)
 	private void onCommitClick(View view) {
-		LogX.trace(TAG, mGridsToSubmit.toString());
-		mSolarManager.setOptimizer(mStationId, getScouterString());
+		if (mGridsToSubmit == null || mGridsToSubmit.size() == 0) {
+			AlertDialog dialog = new AlertDialog.Builder(this)
+					.setTitle(R.string.app_prompt)
+					.setMessage(R.string.scan_empty)
+					.setPositiveButton(R.string.app_ok, new OnClickListener() {
+
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).create();
+			dialog.show();
+			return;
+		}
+		int size = mGridView.getValidGrid();
+		if (mGridsToSubmit.size() != size) {
+			AlertDialog dialog = new AlertDialog.Builder(this)
+					.setTitle(R.string.app_prompt)
+					.setMessage(R.string.not_finished)
+					.setPositiveButton(R.string.continue_submit,
+							new OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									mSolarManager.setOptimizer(mStationId,
+											getScouterString());
+									dialog.dismiss();
+								}
+							})
+					.setNegativeButton(R.string.donot_submit,
+							new OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).create();
+			dialog.show();
+			return;
+		}
 	}
 
 	private String getScouterString() {
@@ -296,6 +346,7 @@ public class CaptureActivity extends BaseActivity implements Callback,
 			mHandler = null;
 		}
 		CameraManager.get().closeDriver();
+		SerializeUtil.serializeObject("scaned_list", mGridsToSubmit);
 	}
 
 	@Override
@@ -557,6 +608,19 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		case SvcNames.WSN_SET_OPTIMIZER:
 			if (jr.getBodyField("is_success").equals("1")) {
 				finish();
+			} else if (jr.getBodyField("sub_code").equals("0006")) {
+				AlertDialog dialog = new AlertDialog.Builder(this)
+						.setTitle(R.string.app_prompt)
+						.setMessage(R.string.invalid_mac)
+						.setPositiveButton(R.string.app_ok,
+								new OnClickListener() {
+
+									public void onClick(DialogInterface dialog,
+											int which) {
+										dialog.dismiss();
+									}
+								}).create();
+				dialog.show();
 			}
 			break;
 

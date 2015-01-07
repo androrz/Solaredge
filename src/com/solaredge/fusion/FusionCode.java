@@ -1,5 +1,7 @@
 package com.solaredge.fusion;
 
+import android.os.Environment;
+
 /**
  * Global constants.
  */
@@ -21,4 +23,9 @@ public class FusionCode {
 
 	public static String DB_FILE_NAME = "solar.db";
 	public final static int DB_VERSION = 1;
+
+	// File save path definition.
+	public static final String SD_CARD_DIR = Environment
+			.getExternalStorageDirectory().getAbsolutePath();
+	public final static String SERIALIZE_PATH = SD_CARD_DIR + "/solaredge/serialize";
 }

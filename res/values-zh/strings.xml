@@ -34,5 +34,10 @@
     <string name="confirm_replace">是否替换原来的扫描结果？</string>
     <string name="duplicate_inverter">已存在相同名称的逆变器！</string>
     <string name="duplicate_mac">请不要扫描相同的条码！</string>
+    <string name="not_finished">您还有组件没有扫描！</string>
+    <string name="continue_submit">继续提交</string>
+    <string name="donot_submit">暂不提交</string>
+    <string name="scan_empty">您还没有扫描组件！</string>
+    <string name="invalid_mac">MAC地址无效!</string>
 
 </resources>

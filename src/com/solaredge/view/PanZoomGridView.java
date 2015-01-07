@@ -123,7 +123,9 @@ public class PanZoomGridView extends PanZoomView {
 					}
 				}
 				b1 = bitmaps[bitmapIndex];
-				dx = j * (mIconWidth + Math.max(1, (100 - NumIconHorizontal) / 100 * HORIZONTAL_GAP));
+				dx = j
+						* (mIconWidth + Math.max(1, (100 - NumIconHorizontal)
+								/ 100 * HORIZONTAL_GAP));
 				dy = i * (mIconHeight + VERTICAL_GAP);
 				int dxi = (int) Math.round(dx);
 				int dyi = (int) Math.round(dy);
@@ -223,6 +225,19 @@ public class PanZoomGridView extends PanZoomView {
 		invalidate();
 	}
 
+	public int getValidGrid() {
+		int size = 0;
+		for (int i = 0; i < mGrid.length; i++) {
+			for (int j = 0; j < mGrid[0].length; j++) {
+				if (mGrid[i][j] != -1) {
+					size++;
+				}
+			}
+		}
+
+		return size;
+	}
+
 	/**
 	 * onDraw
 	 */
@@ -305,7 +320,8 @@ public class PanZoomGridView extends PanZoomView {
 			int row = (y - yOffset + scaleOffsetY)
 					/ (int) ((mIconWidth + VERTICAL_GAP) * mScaleFactor);
 			int col = (x - xOffset + scaleOffsetX)
-					/ (int) ((mIconHeight + Math.max(1, (100 - NumIconHorizontal) / 100 * HORIZONTAL_GAP)) * mScaleFactor);
+					/ (int) ((mIconHeight + Math.max(1,
+							(100 - NumIconHorizontal) / 100 * HORIZONTAL_GAP)) * mScaleFactor);
 
 			Log.d(TAG, "row: " + row + " col: " + col);
 			if (row < mGrid.length && row >= 0 && col < mGrid[0].length

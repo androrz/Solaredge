@@ -1,12 +1,16 @@
 package com.solaredge.entity;
 
+import java.io.Serializable;
+
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Table;
 import com.lidroid.xutils.db.annotation.Transient;
 
 @Table(name = "table_inverter_grid_item")
-public class InverterGridItem {
+public class InverterGridItem implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	private int mId;
