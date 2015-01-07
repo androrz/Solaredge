@@ -475,6 +475,11 @@ public class SolarManager {
 
 		return grid;
 	}
+	
+	public void clearCache(){
+		mDeletedGridMap = null;
+		mExtraGridMap = null;
+	}
 
 	private void _handleStoreInverterGridItem(int row, int col) {
 		try {

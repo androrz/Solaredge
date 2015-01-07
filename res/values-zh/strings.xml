@@ -31,6 +31,7 @@
     <string name="label_inverter_col">列</string>
     
     <string name="confirm_delete">是否删除该组件？</string>
+    <string name="confirm_delete_inverter">是否删除该逆变器？</string>
     <string name="confirm_replace">是否替换原来的扫描结果？</string>
     <string name="duplicate_inverter">已存在相同名称的逆变器！</string>
     <string name="duplicate_mac">请不要扫描相同的条码！</string>
@@ -39,5 +40,10 @@
     <string name="donot_submit">暂不提交</string>
     <string name="scan_empty">您还没有扫描组件！</string>
     <string name="invalid_mac">MAC地址无效!</string>
+    <string name="inverter_name_cannot_null">逆变器名称不能为空！</string>
+    
+    <string name="invalid_user">用户不存在！</string>
+    <string name="invalid_password">登录密码错误！</string>
+    <string name="commit_success">提交成功！</string>
 
 </resources>

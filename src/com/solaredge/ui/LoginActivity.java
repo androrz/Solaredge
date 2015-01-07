@@ -1,5 +1,8 @@
 package com.solaredge.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -103,7 +106,28 @@ public class LoginActivity extends BaseActivity {
 			PreferenceFactory.getDefaultPreference().setUserPassword(
 					mUserPassword);
 			jumpToPage(MainActivity.class, false);
-		}
+		} else if (jr.getBodyField("sub_code").equals("0003")) {
+			AlertDialog dialog = new AlertDialog.Builder(this)
+					.setTitle(R.string.app_prompt)
+					.setMessage(R.string.invalid_password)
+					.setPositiveButton(R.string.app_ok, new OnClickListener() {
 
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).create();
+			dialog.show();
+		} else if (jr.getBodyField("sub_code").equals("0004")) {
+			AlertDialog dialog = new AlertDialog.Builder(this)
+					.setTitle(R.string.app_prompt)
+					.setMessage(R.string.invalid_user)
+					.setPositiveButton(R.string.app_ok, new OnClickListener() {
+
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).create();
+			dialog.show();
+		}
 	}
 }

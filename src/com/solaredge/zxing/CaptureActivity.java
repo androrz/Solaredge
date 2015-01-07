@@ -607,11 +607,31 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		switch (action) {
 		case SvcNames.WSN_SET_OPTIMIZER:
 			if (jr.getBodyField("is_success").equals("1")) {
-				finish();
-			} else if (jr.getBodyField("sub_code").equals("0006")) {
 				AlertDialog dialog = new AlertDialog.Builder(this)
 						.setTitle(R.string.app_prompt)
-						.setMessage(R.string.invalid_mac)
+						.setMessage(R.string.commit_success)
+						.setPositiveButton(R.string.app_ok,
+								new OnClickListener() {
+
+									public void onClick(DialogInterface dialog,
+											int which) {
+										dialog.dismiss();
+									}
+								}).create();
+				dialog.show();
+			} else if (jr.getBodyField("sub_code").equals("0006")) {
+				String detail = jr.getBodyField("detail");
+				String badMac = detail.substring(detail.indexOf(":") + 1,
+						detail.indexOf(":") + 1 + 8);
+				for (InverterGridItem item : mGridsToSubmit) {
+					if (item.getMacId().equals(badMac)) {
+						mGridView.setSelectedGrid(item.getUniversalRow(),
+								item.getUniversalCol());
+					}
+				}
+				AlertDialog dialog = new AlertDialog.Builder(this)
+						.setTitle(R.string.app_prompt)
+						.setMessage(detail)
 						.setPositiveButton(R.string.app_ok,
 								new OnClickListener() {
 

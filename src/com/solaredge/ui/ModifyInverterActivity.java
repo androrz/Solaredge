@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
@@ -19,11 +20,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
 import com.solaredge.entity.Inverter;
+import com.solaredge.entity.InverterGridItem;
 import com.solaredge.entity.JsonResponse;
 import com.solaredge.fusion.SvcNames;
 import com.solaredge.server.response.SlrResponse;
@@ -48,6 +51,8 @@ public class ModifyInverterActivity extends BaseActivity {
 
 	private Inverter mInverter = null;
 	private String mStationId;
+	private int mOriginalGroup = 0;
+	private int mOriginalCluster = 0;
 
 	private TextWatcher mTextWatcher = new TextWatcher() {
 
@@ -99,9 +104,20 @@ public class ModifyInverterActivity extends BaseActivity {
 			mClusterNumber.setText(mInverter.getmClusterNumber() + "");
 			mAngle.setText(mInverter.getmAngle() + "");
 			mInverterName.setText(mInverter.getInverterName());
+			mOriginalGroup = mInverter.getmGroupNumber();
+			mOriginalCluster = mInverter.getmClusterNumber();
 		} else {
 			mInverter = new Inverter();
+			mInverter.setmGroupNumber(1);
+			mInverter.setmClusterNumber(1);
+			mInverter.setmAngle(0);
 			mDeleteInverterBT.setVisibility(View.GONE);
+			mOriginalGroup = 1;
+			mOriginalCluster = 1;
+
+			mGroupNumber.setText("1");
+			mClusterNumber.setText("1");
+			mAngle.setText("0");
 		}
 
 		mInverterName.addTextChangedListener(mTextWatcher);
@@ -111,10 +127,30 @@ public class ModifyInverterActivity extends BaseActivity {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.b_func2:
+
+			if (TextUtils.isEmpty(mInverter.getInverterName())) {
+				AlertDialog dialog = new AlertDialog.Builder(this)
+						.setTitle(R.string.app_prompt)
+						.setMessage(R.string.inverter_name_cannot_null)
+						.setPositiveButton(R.string.app_ok,
+								new OnClickListener() {
+
+									public void onClick(DialogInterface dialog,
+											int which) {
+										dialog.dismiss();
+									}
+								}).create();
+				dialog.show();
+				return;
+			}
+
 			try {
 				List<Inverter> list = DbHelp.getDbUtils(this).findAll(
-						Selector.from(Inverter.class).where("inverter_name",
-								"=", mInverter.getInverterName()));
+						Selector.from(Inverter.class)
+								.where("inverter_name", "=",
+										mInverter.getInverterName())
+								.and("mInverterId", "<>",
+										mInverter.getInverterId()));
 				if (list != null && list.size() > 0) {
 					AlertDialog dialog = new AlertDialog.Builder(this)
 							.setTitle(R.string.app_prompt)
@@ -135,6 +171,19 @@ public class ModifyInverterActivity extends BaseActivity {
 				e.printStackTrace();
 			}
 
+			if (mInverter.getmGroupNumber() != mOriginalGroup
+					|| mInverter.getmClusterNumber() != mOriginalCluster) {
+				try {
+					DbHelp.getDbUtils(this).delete(
+							InverterGridItem.class,
+							WhereBuilder.b("mInverterId", "=",
+									mInverter.getInverterId()));
+					mSolarManager.clearCache();
+				} catch (DbException e) {
+					e.printStackTrace();
+				}
+			}
+
 			mSolarManager.modifyInverter(mStationId, mInverter.getInverterId(),
 					mInverter.getInverterName(), mInverter.getmGroupNumber(),
 					mInverter.getmClusterNumber(), mInverter.getmAngle());
@@ -148,8 +197,25 @@ public class ModifyInverterActivity extends BaseActivity {
 
 	@OnClick(R.id.b_delete_inverter)
 	private void onDeleteInverterClick(View view) {
-		mSolarManager.deleteInverter(mInverter.getmStationId(),
-				mInverter.getInverterId());
+		AlertDialog dialog = new AlertDialog.Builder(this)
+				.setTitle(R.string.app_prompt)
+				.setMessage(R.string.confirm_delete_inverter)
+				.setPositiveButton(R.string.app_ok, new OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						mSolarManager.deleteInverter(mInverter.getmStationId(),
+								mInverter.getInverterId());
+						dialog.dismiss();
+					}
+				})
+				.setNegativeButton(R.string.app_cancel, new OnClickListener() {
+
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				}).create();
+		dialog.show();
+
 	}
 
 	// Wheel scrolled listener
