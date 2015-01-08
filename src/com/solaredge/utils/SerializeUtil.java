@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import com.solaredge.fusion.FusionCode;
-
 import android.os.Environment;
+
+import com.solaredge.fusion.FusionCode;
 
 public class SerializeUtil {
 

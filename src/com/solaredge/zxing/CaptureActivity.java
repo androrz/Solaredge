@@ -1,7 +1,6 @@
 package com.solaredge.zxing;
 
 import java.io.IOException;
-import java.io.SerializablePermission;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import com.solaredge.fusion.FusionCode;
 import com.solaredge.fusion.SvcNames;
 import com.solaredge.server.response.SlrResponse;
 import com.solaredge.ui.BaseActivity;
-import com.solaredge.utils.LogX;
 import com.solaredge.utils.SerializeUtil;
 import com.solaredge.view.PanZoomGridView;
 import com.solaredge.view.PanZoomGridView.OnGridClickListener;
@@ -91,7 +89,6 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	private InverterGridItem mCurrentGrid;
 	private List<InverterGridItem> mGridsToSubmit;
 	private String mStationId;
-	boolean replace = false;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -114,7 +111,6 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		mGridView.setGridArray(matrix);
 		mGridView.setSelectable(true);
 		mGridView.addClickListener(this);
-		mGridView.setSelectedGrid(mRow, mCol);
 
 		mGridsToSubmit = (List<InverterGridItem>) SerializeUtil
 				.deserializeObject("scaned_list");
@@ -125,6 +121,8 @@ public class CaptureActivity extends BaseActivity implements Callback,
 								.get(i).getUniversalCol());
 			}
 		}
+
+		mGridView.setSelectedGrid(mRow, mCol);
 	}
 
 	@OnClick(R.id.i_left)
@@ -403,15 +401,15 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	public void handleDecode(final Result result, Bitmap barcode) {
 		inactivityTimer.onActivity();
 		playBeepSoundAndVibrate();
-		String recode = recode(result.toString());
-		if (recode.length() > 8) {
-			recode = recode.substring(recode.length() - 8, recode.length());
+		String rawCode = recode(result.toString());
+		if (rawCode.length() > 8) {
+			rawCode = rawCode.substring(rawCode.length() - 8, rawCode.length());
 		}
-
+		final String finalCode = new String(rawCode);
 		if (mGridsToSubmit != null && mGridsToSubmit.size() > 0) {
 			for (InverterGridItem item : mGridsToSubmit) {
 				if (!item.equals(mCurrentGrid)
-						&& item.getMacId().equals(recode)) {
+						&& item.getMacId().equals(finalCode)) {
 					AlertDialog dialog = new AlertDialog.Builder(this)
 							.setTitle(R.string.app_prompt)
 							.setMessage(R.string.duplicate_mac)
@@ -422,18 +420,17 @@ public class CaptureActivity extends BaseActivity implements Callback,
 												DialogInterface dialog,
 												int which) {
 											dialog.dismiss();
+											continuePreview();
 										}
 									}).create();
 					dialog.show();
-					mBaseHandler.postDelayed(new Runnable() {
-
-						@Override
-						public void run() {
-							continuePreview();
-						}
-					}, 2000);
 					return;
-				} else if (item.equals(mCurrentGrid)) {
+				}
+			}
+			
+			boolean found = false;
+			for (InverterGridItem item : mGridsToSubmit) {
+				if (item.equals(mCurrentGrid)) {
 					AlertDialog dialog = new AlertDialog.Builder(this)
 							.setTitle(R.string.app_prompt)
 							.setMessage(R.string.confirm_replace)
@@ -443,8 +440,8 @@ public class CaptureActivity extends BaseActivity implements Callback,
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
-											replace = true;
 											dialog.dismiss();
+											handleCurrentGrid(finalCode);
 										}
 									})
 							.setNegativeButton(R.string.app_cancel,
@@ -453,25 +450,22 @@ public class CaptureActivity extends BaseActivity implements Callback,
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
-											replace = false;
 											dialog.dismiss();
+											continuePreview();
 										}
 									}).create();
 					dialog.show();
-					if (!replace) {
-						mBaseHandler.postDelayed(new Runnable() {
-
-							@Override
-							public void run() {
-								continuePreview();
-							}
-						}, 2000);
-						return;
-					}
+					found = true;
 				}
 			}
+			if (!found) {
+				handleCurrentGrid(finalCode);
+				continuePreview();
+			}
 		}
+	}
 
+	private void handleCurrentGrid(String recode) {
 		if (mCurrentGrid != null) {
 			mCurrentGrid.setMacId(recode);
 			mOptimizerMacGridTV
@@ -488,14 +482,7 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		}
 
 		mGridsToSubmit.add(mCurrentGrid);
-
-		mBaseHandler.postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				continuePreview();
-			}
-		}, 2000);
+		continuePreview();
 	}
 
 	private void initBeepSound() {
@@ -591,9 +578,17 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	}
 
 	public void continuePreview() {
-		if (mHandler != null) {
-			mHandler.restartPreviewAndDecode();
-		}
+		mBaseHandler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				if (mHandler != null) {
+					mHandler.restartPreviewAndDecode();
+				}
+
+			}
+		}, 2000);
+
 	}
 
 	@Override
