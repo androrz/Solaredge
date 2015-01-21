@@ -30,5 +30,6 @@
     <string name="label_inverter_name2">Inverter</string>
     <string name="label_inverter_col">Column</string>
     <string name="scan_mac_id">( %1$s )</string>
+    <string name="input_code_prompt">Please enter the MAC code</string>
 
 </resources>

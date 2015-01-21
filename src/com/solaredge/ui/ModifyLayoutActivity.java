@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
+import com.solaredge.utils.VUtils;
 import com.solaredge.view.PanZoomGridView;
 import com.solaredge.view.PanZoomGridView.OnGridClickListener;
 
@@ -23,6 +24,9 @@ public class ModifyLayoutActivity extends BaseActivity implements
 
 	@ViewInject(R.id.i_reset)
 	private ImageButton mReset;
+	
+	@ViewInject(R.id.i_delete_plate)
+	private ImageButton mDelete;
 
 	@ViewInject(R.id.p_grid_view)
 	private PanZoomGridView mGridView;
@@ -61,6 +65,7 @@ public class ModifyLayoutActivity extends BaseActivity implements
 		mXFunc2.setVisibility(View.VISIBLE);
 		mXFunc2.setImageResource(R.drawable.drw_add);
 		mBack.setVisibility(View.GONE);
+		VUtils.disableView(mDelete, true);
 	}
 
 	@Override
@@ -84,6 +89,9 @@ public class ModifyLayoutActivity extends BaseActivity implements
 
 	@OnClick(R.id.i_delete_plate)
 	private void onDeletePlateClick(View view) {
+		if (mRow == -1 || mCol == -1) {
+			return;
+		}
 		AlertDialog dialog = new AlertDialog.Builder(this)
 				.setTitle(R.string.app_prompt)
 				.setMessage(R.string.confirm_delete)
@@ -113,6 +121,7 @@ public class ModifyLayoutActivity extends BaseActivity implements
 	public void onGridClick(int row, int col) {
 		mRow = row;
 		mCol = col;
+		VUtils.enableView(mDelete);
 	}
 
 	@Override

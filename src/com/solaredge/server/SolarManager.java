@@ -459,7 +459,7 @@ public class SolarManager {
 					grid.setCol(col);
 					grid.setUniversalRow(row);
 					grid.setUniversalCol(col);
-					grid.setIsNew(false);
+					grid.setIsNew(0);
 					break;
 				} else {
 					rowOfInverter = row - r;
@@ -499,7 +499,7 @@ public class SolarManager {
 					gridItem.setInverterId(inverterId);
 					gridItem.setRow(rowOfInverter);
 					gridItem.setCol(col);
-					gridItem.setIsNew(false);
+					gridItem.setIsNew(0);
 
 					if (col >= c) { // This is an extra optimizer
 						DbHelp.getDbUtils(mContext).delete(

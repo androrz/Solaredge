@@ -9,13 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
 import com.solaredge.config.PreferenceFactory;
-import com.solaredge.entity.Inverter;
-import com.solaredge.entity.InverterGridItem;
 import com.solaredge.entity.JsonResponse;
 import com.solaredge.fusion.FusionField;
 import com.solaredge.fusion.SvcNames;
@@ -94,17 +91,19 @@ public class LoginActivity extends BaseActivity {
 
 		if (jr.getBodyField("is_success").equals("1")) {
 
-			try {
-				DbHelp.getDbUtils(this).deleteAll(Inverter.class);
-				DbHelp.getDbUtils(this).deleteAll(InverterGridItem.class);
-			} catch (DbException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				DbHelp.getDbUtils(this).deleteAll(Inverter.class);
+//				DbHelp.getDbUtils(this).deleteAll(InverterGridItem.class);
+//			} catch (DbException e) {
+//				e.printStackTrace();
+//			}
 
 			FusionField.solarUser.setMemberID(jr.getBodyField("session"));
 			PreferenceFactory.getDefaultPreference().setUserName(mUserName);
 			PreferenceFactory.getDefaultPreference().setUserPassword(
 					mUserPassword);
+			FusionField.dbName = mUserName + ".db";
+			DbHelp.reset();
 			jumpToPage(MainActivity.class, false);
 		} else if (jr.getBodyField("sub_code").equals("0003")) {
 			AlertDialog dialog = new AlertDialog.Builder(this)

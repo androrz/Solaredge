@@ -158,5 +158,13 @@
         <item name="android:textColor">@color/common_black</item>
         <item name="android:singleLine">true</item>
     </style>
+    
+    <style name="alading_dialog" parent="android:Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 
 </resources>

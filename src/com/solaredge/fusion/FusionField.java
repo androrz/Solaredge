@@ -16,4 +16,5 @@ public class FusionField {
 	public static long timestamp;
 
 	public static SolarUser solarUser;
+	public static String dbName;
 }

@@ -30,5 +30,6 @@
     <string name="label_inverter_angle">角度</string>
     <string name="label_inverter_name2">インバーター</string>
     <string name="label_inverter_col">コラム</string>
+    <string name="input_code_prompt">ヤードを入力してください</string>
 
 </resources>

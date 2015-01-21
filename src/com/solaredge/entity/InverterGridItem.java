@@ -5,7 +5,6 @@ import java.io.Serializable;
 import com.lidroid.xutils.db.annotation.Column;
 import com.lidroid.xutils.db.annotation.Id;
 import com.lidroid.xutils.db.annotation.Table;
-import com.lidroid.xutils.db.annotation.Transient;
 
 @Table(name = "table_inverter_grid_item")
 public class InverterGridItem implements Serializable {
@@ -28,19 +27,19 @@ public class InverterGridItem implements Serializable {
 	private int mAngle;
 
 	@Column(column = "mIsNew")
-	private boolean mIsNew; // true: added extra optimizer, false: deleted
-							// optimizer
+	private int mIsNew; // 2: scanned grid, 1: added extra optimizer, 0: deleted
+						// optimizer
 
-	@Transient
+	@Column(column = "mUniversalRow")
 	private int mUniversalRow;
 
-	@Transient
+	@Column(column = "mUniversalCol")
 	private int mUniversalCol;
 
-	@Transient
+	@Column(column = "mMacId")
 	private String mMacId;
 
-	@Transient
+	@Column(column = "mInverterName")
 	private String mInverterName;
 
 	public String getInverterId() {
@@ -75,11 +74,11 @@ public class InverterGridItem implements Serializable {
 		this.mAngle = mAngle;
 	}
 
-	public boolean isIsNew() {
+	public int isIsNew() {
 		return mIsNew;
 	}
 
-	public void setIsNew(boolean mIsNew) {
+	public void setIsNew(int mIsNew) {
 		this.mIsNew = mIsNew;
 	}
 

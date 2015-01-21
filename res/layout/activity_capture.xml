@@ -30,7 +30,6 @@
             android:id="@+id/t_scan_label"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:text="@string/scan_inverter_label"
@@ -109,6 +108,19 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:src="@drawable/icon_toggle_horizontal" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <ImageButton
+                    android:id="@+id/i_edit"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/icon_edit" />
             </RelativeLayout>
 
             <RelativeLayout

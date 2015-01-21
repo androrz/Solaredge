@@ -45,5 +45,6 @@
     <string name="invalid_user">用户不存在！</string>
     <string name="invalid_password">登录密码错误！</string>
     <string name="commit_success">提交成功！</string>
+    <string name="input_code_prompt">请输入MAC码</string>
 
 </resources>

@@ -49,7 +49,7 @@ public class AddOptimizerActivity extends BaseActivity {
 			mGridItem
 					.setAngle(getWheel(R.id.w_angle).getCurrentItem() == 0 ? 0
 							: 90);
-			mGridItem.setIsNew(true);
+			mGridItem.setIsNew(1);
 			mSolarManager.storeAddedGridItem(mGridItem);
 			showProgressDialog();
 			mBaseHandler.postDelayed(new Runnable() {

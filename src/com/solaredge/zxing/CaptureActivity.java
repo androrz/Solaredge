@@ -27,6 +27,9 @@ import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
+import com.lidroid.xutils.db.sqlite.Selector;
+import com.lidroid.xutils.db.sqlite.WhereBuilder;
+import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
@@ -36,7 +39,8 @@ import com.solaredge.fusion.FusionCode;
 import com.solaredge.fusion.SvcNames;
 import com.solaredge.server.response.SlrResponse;
 import com.solaredge.ui.BaseActivity;
-import com.solaredge.utils.SerializeUtil;
+import com.solaredge.utils.DbHelp;
+import com.solaredge.view.InputCodeDialog;
 import com.solaredge.view.PanZoomGridView;
 import com.solaredge.view.PanZoomGridView.OnGridClickListener;
 import com.solaredge.zxing.camera.CameraManager;
@@ -74,6 +78,9 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	@ViewInject(R.id.i_toggle)
 	private ImageButton mToggleDirectionIB;
 
+	@ViewInject(R.id.i_edit)
+	private ImageButton mEditIB;
+
 	@ViewInject(R.id.i_commit)
 	private ImageButton mCommitIB;
 
@@ -90,7 +97,6 @@ public class CaptureActivity extends BaseActivity implements Callback,
 	private List<InverterGridItem> mGridsToSubmit;
 	private String mStationId;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.activity_capture);
@@ -112,8 +118,15 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		mGridView.setSelectable(true);
 		mGridView.addClickListener(this);
 
-		mGridsToSubmit = (List<InverterGridItem>) SerializeUtil
-				.deserializeObject("scaned_list");
+		// mGridsToSubmit = (List<InverterGridItem>) SerializeUtil
+		// .deserializeObject("scaned_list");
+		try {
+			mGridsToSubmit = DbHelp.getDbUtils(this).findAll(
+					Selector.from(InverterGridItem.class).where("mIsNew", "=",
+							"2"));
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
 		if (mGridsToSubmit != null) {
 			for (int i = 0; i < mGridsToSubmit.size(); i++) {
 				mGridView.setGridScaned(
@@ -232,6 +245,78 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		}
 	}
 
+	@OnClick(R.id.i_edit)
+	private void onManualClick(View view) {
+		final InputCodeDialog dialog = new InputCodeDialog(this);
+		dialog.setOnPositiveListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				final String finalCode = dialog.getMacId();
+				if (mGridsToSubmit != null && mGridsToSubmit.size() > 0) {
+					for (InverterGridItem item : mGridsToSubmit) {
+						if (!item.equals(mCurrentGrid)
+								&& item.getMacId().equals(finalCode)) {
+							AlertDialog dialog = new AlertDialog.Builder(
+									CaptureActivity.this)
+									.setTitle(R.string.app_prompt)
+									.setMessage(R.string.duplicate_mac)
+									.setPositiveButton(R.string.app_ok,
+											new OnClickListener() {
+
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													dialog.dismiss();
+												}
+											}).create();
+							dialog.show();
+							return;
+						}
+					}
+
+					boolean found = false;
+					for (InverterGridItem item : mGridsToSubmit) {
+						if (item.equals(mCurrentGrid)) {
+							AlertDialog dialog = new AlertDialog.Builder(
+									CaptureActivity.this)
+									.setTitle(R.string.app_prompt)
+									.setMessage(R.string.confirm_replace)
+									.setPositiveButton(R.string.app_ok,
+											new OnClickListener() {
+
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													dialog.dismiss();
+													handleCurrentGrid(finalCode);
+												}
+											})
+									.setNegativeButton(R.string.app_cancel,
+											new OnClickListener() {
+
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													dialog.dismiss();
+												}
+											}).create();
+							dialog.show();
+							found = true;
+						}
+					}
+					if (!found) {
+						handleCurrentGrid(finalCode);
+					}
+				} else {
+					handleCurrentGrid(finalCode);
+				}
+				
+				dialog.dismiss();
+			}
+		}).show();
+	}
+
 	@OnClick(R.id.i_commit)
 	private void onCommitClick(View view) {
 		if (mGridsToSubmit == null || mGridsToSubmit.size() == 0) {
@@ -272,6 +357,8 @@ public class CaptureActivity extends BaseActivity implements Callback,
 							}).create();
 			dialog.show();
 			return;
+		} else {
+			mSolarManager.setOptimizer(mStationId, getScouterString());
 		}
 	}
 
@@ -344,7 +431,24 @@ public class CaptureActivity extends BaseActivity implements Callback,
 			mHandler = null;
 		}
 		CameraManager.get().closeDriver();
-		SerializeUtil.serializeObject("scaned_list", mGridsToSubmit);
+		// SerializeUtil.serializeObject("scaned_list", mGridsToSubmit);
+		if (mGridsToSubmit != null && mGridsToSubmit.size() > 0) {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						DbHelp.getDbUtils(CaptureActivity.this).delete(
+								InverterGridItem.class,
+								WhereBuilder.b("mIsNew", "=", "2"));
+						DbHelp.getDbUtils(CaptureActivity.this).saveAll(
+								mGridsToSubmit);
+					} catch (DbException e) {
+						e.printStackTrace();
+					}
+				}
+			}).run();
+		}
 	}
 
 	@Override
@@ -427,7 +531,7 @@ public class CaptureActivity extends BaseActivity implements Callback,
 					return;
 				}
 			}
-			
+
 			boolean found = false;
 			for (InverterGridItem item : mGridsToSubmit) {
 				if (item.equals(mCurrentGrid)) {
@@ -460,8 +564,9 @@ public class CaptureActivity extends BaseActivity implements Callback,
 			}
 			if (!found) {
 				handleCurrentGrid(finalCode);
-				continuePreview();
 			}
+		} else {
+			handleCurrentGrid(finalCode);
 		}
 	}
 
@@ -481,6 +586,7 @@ public class CaptureActivity extends BaseActivity implements Callback,
 			mGridsToSubmit.remove(mCurrentGrid);
 		}
 
+		mCurrentGrid.setIsNew(2);
 		mGridsToSubmit.add(mCurrentGrid);
 		continuePreview();
 	}
