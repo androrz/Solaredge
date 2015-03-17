@@ -2,9 +2,9 @@ package com.solaredge.config;
 
 import android.content.Context;
 
-public class UserPreference extends BasePreference {
+public class UserPref extends BasePref {
 
-	public UserPreference() {
+	public UserPref() {
 		mSharedPref = mContext.getSharedPreferences(
 				AppConfig.PreferenceModule.SOLAR_PREFERENCE_USER,
 				Context.MODE_PRIVATE);

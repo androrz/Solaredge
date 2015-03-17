@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.solaredge.R;
+import com.solaredge.config.PrefFactory;
 import com.solaredge.entity.PowerStation;
 import com.solaredge.ui.InverterListActivity;
 
@@ -74,9 +75,11 @@ public class PowerStationListAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
+				String stationId = mItems.get(position)
+						.getStationId();
+				PrefFactory.getDefaultPref().setLastStationId(stationId);
 				Intent intent = new Intent(mContext, InverterListActivity.class);
-				intent.putExtra("station_id", mItems.get(position)
-						.getStationId());
+				intent.putExtra("station_id", stationId);
 				intent.putExtra("station_name", mItems.get(position)
 						.getStationName());
 				mContext.startActivity(intent);

@@ -16,6 +16,7 @@ import com.lidroid.xutils.db.sqlite.Selector;
 import com.lidroid.xutils.db.sqlite.WhereBuilder;
 import com.lidroid.xutils.exception.DbException;
 import com.solaredge.SolarApp;
+import com.solaredge.config.PrefFactory;
 import com.solaredge.entity.HttpRequestParam;
 import com.solaredge.entity.Inverter;
 import com.solaredge.entity.InverterGridItem;
@@ -225,8 +226,10 @@ public class SolarManager {
 	public int[][] getInverterMatrix() {
 		int[][] matrix = null;
 		try {
+			String stationId = PrefFactory.getDefaultPref().getLastStationId();
 			List<Inverter> list = DbHelp.getDbUtils(mContext).findAll(
-					Inverter.class);
+					Selector.from(Inverter.class).where("station_id", "=",
+							stationId));
 			int maxRow = 0, maxCol = 0;
 			for (int i = 0; i < list.size(); i++) {
 				Inverter inverter = list.get(i);
@@ -475,8 +478,8 @@ public class SolarManager {
 
 		return grid;
 	}
-	
-	public void clearCache(){
+
+	public void clearCache() {
 		mDeletedGridMap = null;
 		mExtraGridMap = null;
 	}

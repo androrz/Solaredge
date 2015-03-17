@@ -118,8 +118,6 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		mGridView.setSelectable(true);
 		mGridView.addClickListener(this);
 
-		// mGridsToSubmit = (List<InverterGridItem>) SerializeUtil
-		// .deserializeObject("scaned_list");
 		try {
 			mGridsToSubmit = DbHelp.getDbUtils(this).findAll(
 					Selector.from(InverterGridItem.class).where("mIsNew", "=",
@@ -589,6 +587,8 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		mCurrentGrid.setIsNew(2);
 		mGridsToSubmit.add(mCurrentGrid);
 		continuePreview();
+		
+		onMoveRightClick(null);
 	}
 
 	private void initBeepSound() {

@@ -7,13 +7,13 @@ import android.content.SharedPreferences;
 import com.solaredge.SolarApp;
 import com.solaredge.fusion.FusionCode;
 
-public class BasePreference {
+public class BasePref {
 
 	protected Context mContext;
 
 	protected SharedPreferences mSharedPref;
 
-	BasePreference() {
+	BasePref() {
 		mContext = SolarApp.getApplication().getApplicationContext();
 	}
 

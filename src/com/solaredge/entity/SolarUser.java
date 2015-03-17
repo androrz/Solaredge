@@ -1,16 +1,16 @@
 package com.solaredge.entity;
 
 import com.solaredge.config.AppConfig;
-import com.solaredge.config.PreferenceFactory;
-import com.solaredge.config.UserPreference;
+import com.solaredge.config.PrefFactory;
+import com.solaredge.config.UserPref;
 import com.solaredge.fusion.FusionCode;
 
 public class SolarUser {
 
-	private UserPreference mUserPreference;
+	private UserPref mUserPreference;
 
 	public SolarUser() {
-		mUserPreference = (UserPreference) PreferenceFactory
+		mUserPreference = (UserPref) PrefFactory
 				.get(AppConfig.PreferenceModule.SOLAR_PREFERENCE_USER);
 	}
 
@@ -35,7 +35,7 @@ public class SolarUser {
 	}
 
 	public void clear() {
-		UserPreference preference = (UserPreference) PreferenceFactory
+		UserPref preference = (UserPref) PrefFactory
 				.get(AppConfig.PreferenceModule.SOLAR_PREFERENCE_USER);
 		preference.clear();
 	}

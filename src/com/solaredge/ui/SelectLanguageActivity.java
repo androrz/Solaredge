@@ -11,7 +11,7 @@ import android.widget.RadioGroup;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.solaredge.R;
 import com.solaredge.SolarApp;
-import com.solaredge.config.PreferenceFactory;
+import com.solaredge.config.PrefFactory;
 
 public class SelectLanguageActivity extends BaseActivity implements
 		OnCheckedChangeListener {
@@ -50,7 +50,7 @@ public class SelectLanguageActivity extends BaseActivity implements
 	@Override
 	protected void initWidgetProperty() {
 		super.initWidgetProperty();
-		String lan = PreferenceFactory.getDefaultPreference().getAppLanguage();
+		String lan = PrefFactory.getDefaultPref().getAppLanguage();
 		if (TextUtils.isEmpty(lan)) {
 			mLanGroup.check(R.id.r_chinese);
 		} else {
@@ -88,17 +88,17 @@ public class SelectLanguageActivity extends BaseActivity implements
 		if (id == R.id.r_chinese) {
 			mLanEnglish.setChecked(false);
 			mLanJapnese.setChecked(false);
-			PreferenceFactory.getDefaultPreference()
+			PrefFactory.getDefaultPref()
 					.setAppLanguage(LAN_CHINESE);
 		} else if (id == R.id.r_english) {
 			mLanChinese.setChecked(false);
 			mLanJapnese.setChecked(false);
-			PreferenceFactory.getDefaultPreference()
+			PrefFactory.getDefaultPref()
 					.setAppLanguage(LAN_ENGLISH);
 		} else if (id == R.id.r_japnese) {
 			mLanEnglish.setChecked(false);
 			mLanChinese.setChecked(false);
-			PreferenceFactory.getDefaultPreference()
+			PrefFactory.getDefaultPref()
 					.setAppLanguage(LAN_JAPNESE);
 		}
 

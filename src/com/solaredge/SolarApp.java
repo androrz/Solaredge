@@ -16,7 +16,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.util.DisplayMetrics;
 
-import com.solaredge.config.PreferenceFactory;
+import com.solaredge.config.PrefFactory;
 import com.solaredge.entity.SolarUser;
 import com.solaredge.fusion.FusionCode;
 import com.solaredge.fusion.FusionField;
@@ -84,7 +84,7 @@ public class SolarApp extends Application {
 
 	public void setLocale() {
 		Locale locale = Locale.getDefault();
-		String language = PreferenceFactory.getDefaultPreference()
+		String language = PrefFactory.getDefaultPref()
 				.getAppLanguage();
 		if (!language.equals("")) {
 			locale = new Locale(language);

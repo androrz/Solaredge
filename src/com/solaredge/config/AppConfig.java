@@ -27,6 +27,7 @@ public class AppConfig {
 		public static final String SOLAR_SYSTEM_LANGUAGE = "app_lnguage";
 		public static final String SOLAR_USER_NAME = "user_name";
 		public static final String SOLAR_USER_PASSWORD = "user_password";
+		public static final String SOLAR_LAST_STATION_ID = "last_station_id";
 	}
 
 }

@@ -12,7 +12,7 @@ import android.widget.EditText;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
-import com.solaredge.config.PreferenceFactory;
+import com.solaredge.config.PrefFactory;
 import com.solaredge.entity.JsonResponse;
 import com.solaredge.fusion.FusionField;
 import com.solaredge.fusion.SvcNames;
@@ -38,9 +38,9 @@ public class LoginActivity extends BaseActivity {
 		setContentView(R.layout.activity_login);
 		super.onCreate(savedInstanceState);
 
-		mUserNameET.setText(PreferenceFactory.getDefaultPreference()
+		mUserNameET.setText(PrefFactory.getDefaultPref()
 				.getUserName());
-		mUserPasswordET.setText(PreferenceFactory.getDefaultPreference()
+		mUserPasswordET.setText(PrefFactory.getDefaultPref()
 				.getUserPassword());
 	}
 
@@ -99,8 +99,8 @@ public class LoginActivity extends BaseActivity {
 //			}
 
 			FusionField.solarUser.setMemberID(jr.getBodyField("session"));
-			PreferenceFactory.getDefaultPreference().setUserName(mUserName);
-			PreferenceFactory.getDefaultPreference().setUserPassword(
+			PrefFactory.getDefaultPref().setUserName(mUserName);
+			PrefFactory.getDefaultPref().setUserPassword(
 					mUserPassword);
 			FusionField.dbName = mUserName + ".db";
 			DbHelp.reset();

@@ -2,9 +2,9 @@ package com.solaredge.config;
 
 import android.content.Context;
 
-public class SolarDefaultPreference extends BasePreference {
+public class SolarDefaultPref extends BasePref {
 
-	SolarDefaultPreference() {
+	SolarDefaultPref() {
 		mSharedPref = mContext.getSharedPreferences(
 				AppConfig.PreferenceModule.SOLAR_PREFERENCE_APPLICATION,
 				Context.MODE_PRIVATE);
@@ -40,6 +40,14 @@ public class SolarDefaultPreference extends BasePreference {
 
 	public void setUserPassword(String language) {
 		putStringKey(AppConfig.PreferenceSolar.SOLAR_USER_PASSWORD, language);
+	}
+
+	public String getLastStationId() {
+		return getStringKey(AppConfig.PreferenceSolar.SOLAR_LAST_STATION_ID);
+	}
+
+	public void setLastStationId(String id) {
+		putStringKey(AppConfig.PreferenceSolar.SOLAR_LAST_STATION_ID, id);
 	}
 
 }
