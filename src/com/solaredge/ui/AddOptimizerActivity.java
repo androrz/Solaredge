@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.lidroid.xutils.exception.DbException;
 import com.solaredge.R;
+import com.solaredge.config.PrefFactory;
 import com.solaredge.entity.Inverter;
 import com.solaredge.entity.InverterGridItem;
 import com.solaredge.utils.DbHelp;
@@ -46,10 +47,11 @@ public class AddOptimizerActivity extends BaseActivity {
 					.getInverterId());
 			mGridItem.setRow(getWheel(R.id.w_group_number).getCurrentItem());
 			mGridItem.setCol(getWheel(R.id.w_cluster_number).getCurrentItem());
-			mGridItem
-					.setAngle(getWheel(R.id.w_angle).getCurrentItem() == 0 ? 0
-							: 90);
+			mGridItem.setAngle(getWheel(R.id.w_angle).getCurrentItem() == 0 ? 0
+					: 90);
 			mGridItem.setIsNew(1);
+			mGridItem.setStationId(PrefFactory.getDefaultPref()
+					.getLastStationId());
 			mSolarManager.storeAddedGridItem(mGridItem);
 			showProgressDialog();
 			mBaseHandler.postDelayed(new Runnable() {

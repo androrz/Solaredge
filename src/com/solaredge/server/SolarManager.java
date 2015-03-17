@@ -500,6 +500,7 @@ public class SolarManager {
 					String inverterId = inverter.getInverterId();
 					InverterGridItem gridItem = new InverterGridItem();
 					gridItem.setInverterId(inverterId);
+					gridItem.setStationId(PrefFactory.getDefaultPref().getLastStationId());
 					gridItem.setRow(rowOfInverter);
 					gridItem.setCol(col);
 					gridItem.setIsNew(0);

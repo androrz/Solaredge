@@ -33,6 +33,7 @@ import com.lidroid.xutils.exception.DbException;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.solaredge.R;
+import com.solaredge.config.PrefFactory;
 import com.solaredge.entity.InverterGridItem;
 import com.solaredge.entity.JsonResponse;
 import com.solaredge.fusion.FusionCode;
@@ -120,8 +121,12 @@ public class CaptureActivity extends BaseActivity implements Callback,
 
 		try {
 			mGridsToSubmit = DbHelp.getDbUtils(this).findAll(
-					Selector.from(InverterGridItem.class).where("mIsNew", "=",
-							"2"));
+					Selector.from(InverterGridItem.class)
+							.where("mIsNew", "=", "2")
+							.and("mStationId",
+									"=",
+									PrefFactory.getDefaultPref()
+											.getLastStationId()));
 		} catch (DbException e) {
 			e.printStackTrace();
 		}
@@ -309,7 +314,7 @@ public class CaptureActivity extends BaseActivity implements Callback,
 				} else {
 					handleCurrentGrid(finalCode);
 				}
-				
+
 				dialog.dismiss();
 			}
 		}).show();
@@ -436,9 +441,12 @@ public class CaptureActivity extends BaseActivity implements Callback,
 				@Override
 				public void run() {
 					try {
+						String stationId = PrefFactory.getDefaultPref()
+								.getLastStationId();
 						DbHelp.getDbUtils(CaptureActivity.this).delete(
 								InverterGridItem.class,
-								WhereBuilder.b("mIsNew", "=", "2"));
+								WhereBuilder.b("mIsNew", "=", "2").and(
+										"mStationId", "=", stationId));
 						DbHelp.getDbUtils(CaptureActivity.this).saveAll(
 								mGridsToSubmit);
 					} catch (DbException e) {
@@ -585,9 +593,11 @@ public class CaptureActivity extends BaseActivity implements Callback,
 		}
 
 		mCurrentGrid.setIsNew(2);
+		mCurrentGrid.setStationId(PrefFactory.getDefaultPref()
+				.getLastStationId());
 		mGridsToSubmit.add(mCurrentGrid);
 		continuePreview();
-		
+
 		onMoveRightClick(null);
 	}
 

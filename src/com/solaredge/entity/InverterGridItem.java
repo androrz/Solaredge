@@ -17,6 +17,9 @@ public class InverterGridItem implements Serializable {
 	@Column(column = "mInverterId")
 	private String mInverterId;
 
+	@Column(column = "mStationId")
+	private String mStationId;
+
 	@Column(column = "mRow")
 	private int mRow;
 
@@ -112,6 +115,14 @@ public class InverterGridItem implements Serializable {
 
 	public void setMacId(String mMacId) {
 		this.mMacId = mMacId;
+	}
+
+	public String getStationId() {
+		return mStationId;
+	}
+
+	public void setStationId(String mStationId) {
+		this.mStationId = mStationId;
 	}
 
 	@Override

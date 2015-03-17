@@ -173,7 +173,7 @@ public class ModifyInverterActivity extends BaseActivity {
 
 			if (mInverter.getmGroupNumber() != mOriginalGroup
 					|| mInverter.getmClusterNumber() != mOriginalCluster) {
-				try {
+				try { // 如果逆变器节点发生了变化，删除与之相关的所有InverterGridItem
 					DbHelp.getDbUtils(this).delete(
 							InverterGridItem.class,
 							WhereBuilder.b("mInverterId", "=",
